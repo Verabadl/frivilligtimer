@@ -3,1134 +3,472 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Frivillige timer</title>
+<title>Frivilligtimer – bli pilot</title>
+<meta name="description" content="Registrer frivillige timer på mobilen og se hele organisasjonen i én rapport. Meld interesse for å være pilot.">
+<meta property="og:title" content="Frivilligtimer – bli pilot">
+<meta property="og:description" content="Registrer frivillige timer på mobilen. Se hele organisasjonen i én rapport.">
+<meta property="og:image" content="https://frivilligtimer.no/assets/bilder/delingsbilde.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b6e4f">
+<link rel="preload" href="assets/fonter/bricolage-grotesque-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--tx:#1b2430;--mu:#5d6b7a;--ac:#0b6e4f;--bd:#d5dce3}
-@media(prefers-color-scheme:dark){:root{--bg:#10151b;--card:#1a222b;--tx:#e8edf2;--mu:#9aa8b6;--ac:#2fb585;--bd:#33414f}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif}
-main{max-width:480px;margin:0 auto;padding:16px}
-h1{font-size:1.3rem;margin:8px 0 4px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.top span{color:var(--mu);font-size:.9rem}
-form,.card{background:var(--card);border-radius:14px;padding:16px;display:grid;gap:14px;margin-bottom:16px}
-label{display:grid;gap:6px;font-weight:600;font-size:.9rem}
-input,textarea,select{font:inherit;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);width:100%}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.sum{background:var(--bg);border-radius:10px;padding:12px;text-align:center;color:var(--mu)}
-.sum b{display:block;font-size:1.6rem;color:var(--ac)}
-button{font:inherit;font-weight:700;padding:14px;border:0;border-radius:12px;background:var(--ac);color:#fff}
-button.lnk{background:none;color:var(--ac);padding:4px 8px;white-space:nowrap}
-button:disabled{opacity:.5}
-.links{display:flex;justify-content:center}
-.top .btns{display:flex;gap:4px;flex-shrink:0}
-.msg{padding:12px;border-radius:10px;display:none}
-.msg.ok{display:block;background:#d9f2e6;color:#0b4a34}
-.msg.err{display:block;background:#fbdcdc;color:#7a1414}
-.item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--bd);font-size:.9rem}
-.item:first-of-type{border-top:0}
-.item small{color:var(--mu);display:block}
-.tabs,.seg,.sub{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;margin-bottom:14px}
-.tab,.seg button,.sub button{background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:11px;font-weight:600}
-.tab.on,.seg button.on,.sub button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-button.sec{background:var(--bg);color:var(--tx);border:1px solid var(--bd);font-weight:600}
-.lbl{font-weight:600;font-size:.9rem}
-.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
-.th{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--bg)}
-.th img{width:100%;height:100%;object-fit:cover;display:block}
-.th button{position:absolute;top:4px;right:4px;width:28px;height:28px;padding:0;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:16px;line-height:1}
-.hint{color:var(--mu);font-size:.8rem}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.kpi{background:var(--card);border-radius:14px;padding:12px}
-.kpi span{display:block;color:var(--mu);font-size:.78rem}
-.kpi b{display:block;font-size:1.5rem;color:var(--ac);margin-top:2px}
-.card svg{width:100%;height:auto;display:block}
-.gl{stroke:var(--bd);stroke-width:1}
-.tx{fill:var(--mu);font-size:10px}
-.bar{fill:var(--ac)}
-.ln{fill:none;stroke:var(--ac);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.ar{fill:var(--ac);opacity:.12}
-.dt{fill:var(--ac);stroke:var(--card);stroke-width:2}
-.tv{width:100%;border-collapse:collapse;font-size:.88rem}
-.tv th,.tv td{text-align:right;padding:6px 4px;border-top:1px solid var(--bd)}
-.tv th:first-child,.tv td:first-child{text-align:left}
-.tv th{color:var(--mu);font-weight:600;border-top:0}
-button.sm{padding:8px 12px;font-size:.85rem}
-.arow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 0}
-.sub{grid-auto-flow:row;grid-template-columns:1fr 1fr 1fr}
-.sub button{padding:11px 4px;font-size:.9rem}
-.mx{overflow-x:auto;margin-top:8px}
-.mx .tv{min-width:100%;white-space:nowrap}
-.tv tr.ar1 td{font-weight:700;background:var(--bg)}
-.tv tr.ak td:first-child{padding-left:22px;color:var(--mu)}
-.tv tr.nd td:first-child{font-weight:700}
-.tv tr.av td:first-child{color:var(--mu)}
-.chklist{display:grid;gap:8px;max-height:220px;overflow:auto;border:1px solid var(--bd);border-radius:10px;padding:10px;background:var(--bg)}
-.orgbtn{display:grid;gap:2px;text-align:left;width:100%;padding:16px;font-size:1.05rem}
-.orgbtn small{color:var(--mu);font-weight:400;font-size:.8rem}
-.note{padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--bd);font-size:.85rem;color:var(--mu)}
-.xarr{border-top:1px solid var(--bd);padding:10px 0}
-.xakts{margin:4px 0 0 10px;padding-left:10px;border-left:2px solid var(--bd)}
-.hint a{color:var(--ac);font-weight:600}
-.chk{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.88rem}
-.chk input{width:auto}
-.bar-h{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:4px}
-.bar-h i{display:block;height:100%;background:var(--ac)}
-.item>div:first-child{flex:1;min-width:0}
-.mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.mini img{width:76px;height:76px;object-fit:cover;border-radius:8px}
-.pill{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--ac);border:1px solid var(--bd)}
-.rh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.rh h2{font-size:1.1rem;margin:0}
-@media print{
-  :root{--bg:#fff;--card:#fff;--tx:#000;--mu:#555;--bd:#ccc;--ac:#0b6e4f}
-  body *{visibility:hidden}
-  #rap-ut,#rap-ut *{visibility:visible}
-  #rap-ut{position:absolute;left:0;top:0;width:100%}
-  .noprint,.noprint *{display:none!important}
-  .card,.kpi{border:1px solid #ccc;break-inside:avoid}
+@font-face{font-family:"Bricolage Grotesque";font-weight:600;font-display:swap;src:url(assets/fonter/bricolage-grotesque-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Bricolage Grotesque";font-weight:800;font-display:swap;src:url(assets/fonter/bricolage-grotesque-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:400;font-display:swap;src:url(assets/fonter/source-sans-3-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:600;font-display:swap;src:url(assets/fonter/source-sans-3-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Source Sans 3";font-weight:700;font-display:swap;src:url(assets/fonter/source-sans-3-latin-700-normal.woff2) format("woff2")}
+
+:root{
+  --gronn:#0b6e4f;      /* samme grønn som appen */
+  --skog:#073f2e;       /* mørk grønn til tekst på lyst og flater */
+  --blekk:#17251f;      /* brødtekst */
+  --mose:#55665d;       /* dempet tekst */
+  --lys:#eef3ef;        /* bakgrunn */
+  --papir:#ffffff;
+  --strek:#cfdad3;
+  --vest:#f4c430;       /* refleksvest-gul: kun til resultatet og fokus */
+  --feil:#a4161a;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --tekst:"Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --maks:1160px;
 }
-[hidden]{display:none!important}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--lys);color:var(--blekk);font:400 1.125rem/1.55 var(--tekst)}
+img,video{display:block;max-width:100%;height:auto}
+a{color:var(--gronn);text-underline-offset:.18em}
+:focus-visible{outline:3px solid var(--vest);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--maks);margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);font-weight:800;color:var(--skog);line-height:1.08;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(1.9rem,4vw,2.8rem)}
+h3{font-size:1.35rem;font-weight:600;line-height:1.2}
+p{margin:0}
+.ingress{font-size:1.2rem;color:var(--mose);max-width:36em}
+
+/* Topp */
+.topp{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.merke{display:flex;align-items:center;gap:10px;font:800 1.3rem var(--display);color:var(--skog);text-decoration:none}
+.merke i{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--gronn);color:#fff;font-style:normal;font-size:1.25rem;line-height:1}
+.topp a.knapp{padding:10px 16px;font-size:1rem}
+
+.knapp{display:inline-block;font:700 1.08rem var(--tekst);background:var(--gronn);color:#fff;border:0;border-radius:12px;padding:15px 24px;text-decoration:none;cursor:pointer}
+.knapp:hover{background:var(--skog)}
+.knapp:disabled{opacity:.6;cursor:progress}
+
+/* Hero: regnestykket er overskriften */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:40px 0 72px}
+.stykke{display:flex;align-items:flex-start;gap:clamp(10px,2vw,22px);margin:0 0 28px;font-family:var(--display);font-weight:800;color:var(--skog);line-height:.9}
+.stykke span{display:grid;gap:10px;justify-items:start}
+.stykke b{font-size:clamp(4.2rem,11vw,8.6rem);font-weight:800;letter-spacing:-.03em}
+.stykke small{font:600 1rem/1.2 var(--tekst);color:var(--mose);letter-spacing:0}
+.stykke .op{font-size:clamp(2.8rem,7vw,5.4rem);color:var(--gronn);padding-top:.18em}
+.stykke .svar b{background:linear-gradient(transparent 62%,var(--vest) 62%,var(--vest) 90%,transparent 90%);padding:0 .06em}
+.hero h1{font-size:clamp(1.7rem,3.4vw,2.5rem);max-width:17em;margin-bottom:16px}
+.hero .ingress{margin-bottom:28px}
+.hero .under{margin-top:14px;font-size:.95rem;color:var(--mose)}
+
+/* Enheter */
+.mobil{position:relative;width:min(100%,330px);margin:0 auto;border:11px solid var(--blekk);border-top-width:30px;border-bottom-width:16px;border-radius:44px;background:var(--blekk);box-shadow:0 30px 60px -30px rgba(7,63,46,.55)}
+.mobil::before{content:"";position:absolute;top:-22px;left:50%;width:76px;height:14px;margin-left:-38px;background:#2b3a33!important;border-radius:12px;background:var(--blekk);z-index:2}
+.mobil img,.mobil video{width:100%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:22px;background:#f4f6f8}
+.pc{border:1px solid var(--strek);border-radius:14px;overflow:hidden;background:var(--papir);box-shadow:0 30px 70px -40px rgba(7,63,46,.5)}
+.pc .linje{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--strek);background:#f7f9f8;font-size:.85rem;color:var(--mose)}
+.pc .linje span{flex:1;max-width:420px;margin:0 auto;padding:4px 12px;border-radius:8px;background:var(--lys);text-align:center}
+.pc img,.pc video{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}
+
+/* Slik fungerer det: tre steg i rekkefølge */
+.seksjon{padding:72px 0}
+.seksjon>.wrap>h2{margin-bottom:12px}
+.seksjon>.wrap>.ingress{margin-bottom:44px}
+.steg{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;list-style:none;margin:0;padding:0;counter-reset:steg}
+.steg li{display:grid;grid-template-rows:auto auto 1fr;gap:12px;counter-increment:steg}
+.steg h3::before{content:counter(steg);display:inline-grid;place-items:center;width:32px;height:32px;margin-right:10px;border-radius:50%;background:var(--gronn);color:#fff;font-size:1rem;vertical-align:2px}
+.steg p{color:var(--mose)}
+.steg .mobil{width:min(100%,250px);border-width:22px 8px 12px;border-radius:34px;margin:8px 0 0}
+.steg .mobil::before{width:58px;height:11px;margin-left:-29px;top:-16px}
+.steg .mobil img{border-radius:18px}
+.steg .pc{margin-top:8px;align-self:start}
+.steg .pc img{aspect-ratio:3/4;object-position:left top}
+
+/* Admin på desktop */
+.admin{background:var(--skog);color:#e7efe9}
+.admin h2,.admin h3{color:#fff}
+.admin .ingress{color:#bcd2c4}
+.admin-grid{display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:start}
+.galleri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.galleri figure{margin:0}
+.galleri a{display:block;border-radius:10px}
+.galleri img{border-radius:10px;border:1px solid rgba(255,255,255,.18);aspect-ratio:16/10;object-fit:cover;object-position:left top;width:100%}
+.galleri figcaption{font-size:.92rem;color:#bcd2c4;margin-top:8px}
+.tre{list-style:none;margin:14px 0 0;padding:0;font-size:1rem}
+.tre ul{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid rgba(255,255,255,.22)}
+.tre li{padding:5px 0 0 10px;position:relative}
+.tre li::before{content:"";position:absolute;left:-2px;top:17px;width:10px;border-top:2px solid rgba(255,255,255,.22)}
+.tre>li{padding-left:0}.tre>li::before{display:none}
+.tre em{font-style:normal;color:#9fbcab;font-size:.85rem;margin-left:6px}
+.punkter{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.punkter li{padding-left:26px;position:relative}
+.punkter li::before{content:"";position:absolute;left:0;top:.5em;width:12px;height:12px;border-radius:3px;background:var(--vest)}
+.admin .mobil{width:min(100%,260px);border-color:#0d1a14;background:#0d1a14;margin:26px 0 0}
+.admin .mobil::before{background:#0d1a14}
+
+/* Skjema */
+.pilot{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.pilot .punkter li::before{background:var(--gronn)}
+form{background:var(--papir);border:1px solid var(--strek);border-radius:18px;padding:28px;display:grid;gap:18px}
+.felt{display:grid;gap:6px}
+.to{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+label,legend{font-weight:700;font-size:1rem;color:var(--blekk)}
+.valgfri{font-weight:400;color:var(--mose)}
+input[type=text],input[type=email],input[type=tel],textarea{font:inherit;font-size:1.05rem;width:100%;padding:13px 14px;border:1.5px solid var(--strek);border-radius:10px;background:var(--lys);color:var(--blekk)}
+input:focus,textarea:focus{outline:none;border-color:var(--gronn);background:#fff;box-shadow:0 0 0 3px rgba(11,110,79,.18)}
+.felt[data-feil] input{border-color:var(--feil);background:#fff7f7}
+.feiltekst{color:var(--feil);font-size:.92rem;font-weight:600;min-height:0}
+.feiltekst:empty{display:none}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:10px}
+legend{margin-bottom:4px}
+.hjelp{font-size:.95rem;color:var(--mose);margin:-2px 0 4px}
+.valg{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-weight:400;font-size:1rem;cursor:pointer}
+.valg input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--gronn)}
+.krav{padding-top:16px;border-top:1px solid var(--strek)}
+.honning{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.status{border-radius:12px;padding:14px 16px;font-weight:600}
+.status:empty{display:none}
+.status.ok{background:#dcf1e6;color:var(--skog)}
+.status.feil{background:#fde2e2;color:var(--feil)}
+.skjul-sendt{display:grid;gap:18px}
+form.sendt .skjul-sendt{display:none}
+
+/* Bunn */
+.bunn{padding:48px 0 60px;border-top:1px solid var(--strek);font-size:1rem;color:var(--mose)}
+.bunn .wrap{display:grid;grid-template-columns:1.4fr 1fr;gap:40px}
+.bunn h3{font-size:1.1rem;margin-bottom:8px}
+.bunn p+p{margin-top:8px}
+
+@media (max-width:900px){
+  .hero,.pilot,.admin-grid{grid-template-columns:1fr}
+  .hero{padding-top:16px;gap:36px}
+  .steg{grid-template-columns:1fr;gap:44px}
+  .steg li{grid-template-columns:1fr}
+  .steg .mobil{width:min(100%,280px)}
+  .admin-grid>aside{display:grid;grid-template-columns:1fr;gap:0}
+  .bunn .wrap{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  body{font-size:1.06rem}
+  .wrap{padding:0 16px}
+  .topp a.knapp{display:none}
+  .galleri{grid-template-columns:1fr}
+  .to{grid-template-columns:1fr}
+  form{padding:20px}
+  .seksjon{padding:56px 0}
+  .stykke small{font-size:.85rem}
+}
 </style>
 </head>
 <body>
+
+<header class="wrap topp">
+  <a class="merke" href="#" aria-label="Frivilligtimer, til toppen"><i aria-hidden="true">×</i>Frivilligtimer</a>
+  <a class="knapp" href="#pilot">Meld interesse</a>
+</header>
+
 <main>
+  <section class="wrap hero" aria-labelledby="hero-tittel">
+    <div>
+      <p class="stykke" aria-label="6 frivillige ganger 4 timer hver er 24 timer dugnad">
+        <span aria-hidden="true"><b>6</b><small>frivillige</small></span>
+        <span class="op" aria-hidden="true">×</span>
+        <span aria-hidden="true"><b>4</b><small>timer hver</small></span>
+        <span class="op" aria-hidden="true">=</span>
+        <span class="svar" aria-hidden="true"><b>24</b><small>timer dugnad</small></span>
+      </p>
+      <h1 id="hero-tittel">Registrer frivillig innsats på mobilen. Se hele organisasjonen i én rapport.</h1>
+      <p class="ingress">Frivilligtimer er laget for lag og foreninger som vil vite hvor mye frivillig arbeid som faktisk gjøres, uten regneark og etterarbeid. Vi ser etter organisasjoner som vil prøve løsningen som pilot.</p>
+      <a class="knapp" href="#pilot">Meld interesse for pilot</a>
+      <p class="under">Det tar under ett minutt å melde interesse.</p>
+    </div>
+    <div class="mobil">
+      <video id="v-mobil" muted loop playsinline preload="metadata" poster="assets/video/registrering-mobil-poster.jpg"
+             aria-label="Video: en frivillig registrerer 6 personer à 4 timer på Sommerfest, og ser oversikten etterpå">
+        <source src="assets/video/registrering-mobil.mp4" type="video/mp4">
+        <source src="assets/video/registrering-mobil.webm" type="video/webm">
+      </video>
+    </div>
+  </section>
 
-<section id="login" hidden>
-  <h1>Logg inn</h1>
-  <form id="lf">
-    <label>E-post<input id="em" type="email" autocomplete="username" required></label>
-    <label>Passord<input id="pw" type="password" autocomplete="current-password" required></label>
-    <button id="lbtn">Logg inn</button>
-    <div id="lmsg" class="msg"></div>
-    <div class="links"><button class="lnk" id="forgot" type="button">Glemt passord?</button></div>
-  </form>
-</section>
+  <section class="seksjon" aria-labelledby="slik">
+    <div class="wrap">
+      <h2 id="slik">Slik fungerer det</h2>
+      <p class="ingress">Den som var på dugnaden registrerer. Den som skal rapportere, får tallene ferdig summert.</p>
+      <ol class="steg">
+        <li>
+          <h3>Registrer</h3>
+          <p>Velg arrangement og aktivitet, skriv antall frivillige og timer hver. Totalen regnes ut mens du skriver. Posisjon og bilder kan legges ved.</p>
+          <div class="mobil"><img src="assets/bilder/mobil-registrer.webp" width="780" height="1688" loading="lazy"
+               alt="Registreringsskjema på mobil: Sommerfest, aktivitet Kiosk, 6 ressurser à 4 timer, totalt 24 timer"></div>
+        </li>
+        <li>
+          <h3>Følg med</h3>
+          <p>Hver frivillig ser egne timer og lagets timer, måned for måned og akkumulert gjennom året.</p>
+          <div class="mobil"><img src="assets/bilder/mobil-oversikt.webp" width="780" height="1688" loading="lazy"
+               alt="Oversikt på mobil: mine timer totalt, avdelingens timer, og søylediagram med timer per måned"></div>
+        </li>
+        <li>
+          <h3>Rapporter</h3>
+          <p>Administratorer ser timer per nivå og per arrangement for hele organisasjonen, og lager PDF eller Power BI-rapport.</p>
+          <div class="pc"><img src="assets/bilder/desktop-admin-rapport.webp" width="1800" height="1125" loading="lazy"
+               alt="Admin-rapport på PC: 4 162 timer totalt, timer per nivå fra forbund ned til lag, og timer per arrangement"></div>
+        </li>
+      </ol>
+    </div>
+  </section>
 
-<section id="reset" hidden>
-  <h1>Glemt passord</h1>
-  <form id="rf">
-    <label>E-post<input id="rem" type="email" autocomplete="username" required></label>
-    <button id="rbtn">Send lenke for nytt passord</button>
-    <div id="rmsg" class="msg"></div>
-    <div class="links"><button class="lnk" id="rback" type="button">Tilbake til innlogging</button></div>
-  </form>
-</section>
-
-<section id="setpw" hidden>
-  <h1>Nytt passord</h1>
-  <form id="pf">
-    <label>Nytt passord (minst 8 tegn)<input id="np" type="password" autocomplete="new-password" minlength="8" required></label>
-    <label>Gjenta passord<input id="np2" type="password" autocomplete="new-password" minlength="8" required></label>
-    <button id="pbtn">Lagre passord</button>
-    <div id="pmsg" class="msg"></div>
-    <div class="links"><button class="lnk" id="pcancel" type="button">Avbryt</button></div>
-  </form>
-</section>
-
-<section id="orgvelg" hidden>
-  <h1>Velg organisasjon</h1>
-  <div class="card">
-    <span class="hint">Du har tilknytning til flere organisasjoner. Du logger inn i én om gangen, og ser bare data for den du velger.</span>
-    <div id="orgliste" style="display:grid;gap:10px"></div>
-    <div class="links"><button class="lnk" id="orgut" type="button">Logg ut</button></div>
-  </div>
-</section>
-
-<section id="app" hidden>
-  <div class="top">
-    <div><h1>Frivillige timer</h1><span id="avdnavn"></span></div>
-    <div class="btns"><button class="lnk" id="byttorg" type="button" hidden>Bytt org.</button><button class="lnk" id="chpw" type="button">Bytt passord</button><button class="lnk" id="out" type="button">Logg ut</button></div>
-  </div>
-  <label id="avdvelgl" hidden style="margin-bottom:12px">Avdeling<select id="avdvelg"></select></label>
-  <div class="tabs">
-    <button type="button" class="tab on" id="tab-reg" data-t="reg">Registrer</button>
-    <button type="button" class="tab" id="tab-ov" data-t="ov">Oversikt</button>
-    <button type="button" class="tab" id="tab-adm" data-t="adm" hidden>Admin</button>
-  </div>
-
-  <div id="p-reg">
-    <form id="f">
-      <label>Arrangement<select id="arr" required></select></label>
-      <label id="arrnylbl" hidden>Navn på nytt arrangement<input id="arrny" maxlength="120" placeholder="F.eks. Sommerfest" autocomplete="off"></label>
-      <label>Aktivitet<select id="akt" required disabled><option value="">Velg arrangement først</option></select></label>
-      <label id="aktnylbl" hidden>Navn på ny aktivitet<input id="aktny" maxlength="120" placeholder="F.eks. Standvakt" autocomplete="off"></label>
-      <label>Dato<input id="dato" type="date" required></label>
-      <div class="row">
-        <label>Antall ressurser (x)<input id="x" type="number" inputmode="numeric" min="1" step="1" required></label>
-        <label>Timer hver (y)<input id="y" type="number" inputmode="decimal" min="0.25" step="0.25" required></label>
-      </div>
-      <div class="sum">Totalt antall timer<b id="tot">0</b></div>
-      <label>Registrert av (valgfritt)<input id="av" autocomplete="name"></label>
-      <label>Kommentar (valgfritt)<textarea id="kom" rows="2"></textarea></label>
-      <div id="gpsbox" style="display:grid;gap:8px" hidden>
-        <span class="lbl" id="gpslbl">Sted for aktiviteten</span>
-        <div class="row">
-          <button type="button" class="sec" id="gpsbtn">Bruk min posisjon</button>
-          <button type="button" class="sec" id="gpsclr">Fjern posisjon</button>
+  <section class="seksjon admin" aria-labelledby="admin-tittel">
+    <div class="wrap admin-grid">
+      <div>
+        <h2 id="admin-tittel">For administratorer: alle nivåene på én skjerm</h2>
+        <p class="ingress" style="margin:12px 0 28px">Velg et nivå og en periode. Timene summeres oppover fra lagene, og aktivitetene grupperes under hvert arrangement.</p>
+        <div class="pc">
+          <div class="linje" aria-hidden="true"><span>frivilligtimer.no/app</span></div>
+          <video id="v-pc" muted loop playsinline preload="none" poster="assets/video/rapport-desktop-poster.jpg"
+                 aria-label="Video: en administrator lager rapport for hele forbundet, bytter til Region Nord, og åpner organisasjon og brukere">
+            <source src="assets/video/rapport-desktop.mp4" type="video/mp4">
+        <source src="assets/video/rapport-desktop.webm" type="video/webm">
+          </video>
         </div>
-        <label>Koordinater eller kartlenke<input id="gpsinp" placeholder="62.4722, 6.1495 eller lenke fra kart" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
-        <span class="hint" id="gpsinfo">Ikke registrert</span>
-      </div>
-      <div style="display:grid;gap:8px">
-        <span class="lbl">Bilder fra aktiviteten (inntil 5)</span>
-        <div class="row">
-          <button type="button" class="sec" id="cam">Ta bilde</button>
-          <button type="button" class="sec" id="gal">Velg fra galleri</button>
+        <div class="galleri">
+          <figure><a href="assets/bilder/desktop-admin-grafer.webp" target="_blank" rel="noopener"><img src="assets/bilder/desktop-admin-grafer.webp" width="1800" height="1125" loading="lazy" alt="Timer per måned og akkumulert for hele forbundet"></a><figcaption>Timer per måned og akkumulert</figcaption></figure>
+          <figure><a href="assets/bilder/desktop-admin-organisasjon.webp" target="_blank" rel="noopener"><img src="assets/bilder/desktop-admin-organisasjon.webp" width="1800" height="1125" loading="lazy" alt="Organisasjonsnivåer: forbund, regioner og kretser"></a><figcaption>Organisasjonsnivåer</figcaption></figure>
+          <figure><a href="assets/bilder/desktop-admin-brukere.webp" target="_blank" rel="noopener"><img src="assets/bilder/desktop-admin-brukere.webp" width="1800" height="1125" loading="lazy" alt="Brukerliste med avdelinger og administratorroller"></a><figcaption>Brukere og roller</figcaption></figure>
         </div>
-        <input id="fcam" type="file" accept="image/*" capture="environment" hidden>
-        <input id="fgal" type="file" accept="image/*" multiple hidden>
-        <div id="thumbs" class="thumbs"></div>
-        <span class="hint" id="fcount">Ingen bilder valgt</span>
       </div>
-      <button id="btn">Lagre</button>
-      <div id="msg" class="msg"></div>
-    </form>
-    <div class="card"><strong>Siste registreringer</strong><div id="hist"></div></div>
-  </div>
-
-  <div id="p-ov" hidden>
-    <div class="kpis">
-      <div class="kpi"><span>Mine timer totalt</span><b id="k1">–</b></div>
-      <div class="kpi"><span>Avdelingen totalt</span><b id="k2">–</b></div>
-      <div class="kpi"><span>Mine denne måneden</span><b id="k3">–</b></div>
-      <div class="kpi"><span>Avdelingen denne måneden</span><b id="k4">–</b></div>
+      <aside aria-labelledby="eks-tittel">
+        <h3 id="eks-tittel">Eksempel på struktur</h3>
+        <ul class="tre">
+          <li>Eksempelforbundet<em>forbund</em>
+            <ul>
+              <li>Region Nord<em>region</em>
+                <ul>
+                  <li>Krets A<em>krets</em><ul><li>Lag 1</li><li>Lag 2</li></ul></li>
+                  <li>Krets B<em>krets</em><ul><li>Lag 3</li><li>Lag 5</li></ul></li>
+                </ul>
+              </li>
+              <li>Region Sør<em>region</em>
+                <ul><li>Krets C<em>krets</em><ul><li>Lag 4</li><li>Lag 6</li></ul></li></ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="punkter">
+          <li>Inntil fem nivåer, med egne navn på hvert nivå.</li>
+          <li>Administratorer på hvert nivå ser sitt nivå og alt under.</li>
+          <li>Medlemmer i flere organisasjoner logger inn i én om gangen.</li>
+        </ul>
+        <div class="mobil"><img src="assets/bilder/mobil-admin-rapport.webp" width="780" height="1688" loading="lazy"
+             alt="Samme rapport på mobil for Region Nord: 2 795,5 timer, fordelt på krets og lag"></div>
+      </aside>
     </div>
-    <div class="seg">
-      <button type="button" class="on" data-w="avd">Avdelingen</button>
-      <button type="button" data-w="meg">Meg</button>
-    </div>
-    <div class="card"><strong>Timer per måned</strong><div id="c1"></div></div>
-    <div class="card"><strong>Akkumulert antall timer</strong><div id="c2"></div></div>
-    <div class="card"><strong>Måned for måned</strong><div id="tbl"></div></div>
-    <div class="card"><strong>Timer per arrangement</strong><span class="hint">Avdelingen, alle perioder. Aktivitetene er gruppert under arrangementet.</span><div id="arrtbl"></div></div>
-    <div id="omsg" class="msg"></div>
-  </div>
+  </section>
 
-  <div id="p-adm" hidden>
-    <div class="sub noprint">
-      <button type="button" class="on" data-a="rap">Rapporter</button>
-      <button type="button" data-a="bru">Brukere</button>
-      <button type="button" data-a="org">Organisasjon</button>
-      <button type="button" data-a="avd">Avdelinger</button>
-      <button type="button" data-a="arr">Arrangement</button>
-    </div>
-
-    <div id="a-rap">
-      <form id="rf2" class="noprint">
-        <label>Nivå / område<select id="rnode"></select></label>
-        <label>Avdeling (valgfritt)<select id="rav"></select></label>
-        <div class="row">
-          <label>Fra måned<input id="rfra" type="month" required></label>
-          <label>Til måned<input id="rtil" type="month" required></label>
-        </div>
-        <label class="chk"><input type="checkbox" id="rall"> Vis miniatyrbilder i rapporten</label>
-        <button id="rbtn2">Vis rapport</button>
-        <div id="rmsg2" class="msg"></div>
-      </form>
-      <div id="rap-ut"></div>
-    </div>
-
-    <div id="a-bru" hidden>
-      <div class="card">
-        <div class="rh"><strong>Brukere</strong><button type="button" class="sec sm" id="bny">Ny bruker</button></div>
-        <div id="bmsg" class="msg"></div>
-        <div id="bliste"></div>
+  <section class="seksjon" id="pilot" aria-labelledby="pilot-tittel">
+    <div class="wrap pilot">
+      <div>
+        <h2 id="pilot-tittel">Bli pilot</h2>
+        <p class="ingress" style="margin-top:12px">Vi ser etter lag, foreninger og organisasjoner med flere nivåer som vil prøve Frivilligtimer i praksis og fortelle oss hva som fungerer.</p>
+        <ul class="punkter">
+          <li>Vi setter opp organisasjonsstrukturen deres sammen med dere.</li>
+          <li>Dere registrerer timer fra ekte dugnader og arrangementer.</li>
+          <li>Vi ber om tilbakemelding underveis, og bruker den til å forbedre løsningen.</li>
+        </ul>
       </div>
-      <form id="bf" hidden>
-        <strong id="btitle">Ny bruker</strong>
-        <label>E-post<input id="bem" type="email" autocomplete="off" required></label>
-        <label>Passord (kun for ny konto)
-          <div class="row" style="grid-template-columns:1fr auto">
-            <input id="bpw" type="text" autocomplete="off" minlength="8">
-            <button type="button" class="sec sm" id="bgen">Lag passord</button>
+
+      <form id="skjema" novalidate>
+        <div class="skjul-sendt">
+          <div class="to">
+            <div class="felt"><label for="navn">Navn</label><input id="navn" name="Navn" type="text" autocomplete="name" required maxlength="120"><span class="feiltekst" id="navn-feil"></span></div>
+            <div class="felt"><label for="org">Organisasjon</label><input id="org" name="Organisasjon" type="text" autocomplete="organization" required maxlength="160"><span class="feiltekst" id="org-feil"></span></div>
           </div>
-        </label>
-        <div class="note" id="butenfor" hidden>Brukeren har også tilknytning utenfor ditt område. Du kan bare endre koblingene i ditt eget område. Passord og aktiv/deaktivert kan du ikke endre.</div>
-        <div style="display:grid;gap:6px"><span class="lbl">Avdelinger (bruker)</span><div class="chklist" id="bavd"></div></div>
-        <div style="display:grid;gap:6px"><span class="lbl">Administrator for nivå (gjelder nivået og alt under)</span><div class="chklist" id="bnod"></div></div>
-        <label class="chk" id="bsuperrad" hidden><input type="checkbox" id="bsuper"> Super-admin (hele løsningen, alle organisasjoner)</label>
-        <label class="chk" id="bdearad"><input type="checkbox" id="bdea"> Deaktivert (kan ikke logge inn)</label>
-        <button id="blagre">Lagre</button>
-        <button type="button" class="sec" id="bavbryt">Avbryt</button>
-        <button type="button" class="sec" id="bslett" style="color:#b42318">Slett bruker</button>
-        <div id="bmsg2" class="msg"></div>
+          <div class="to">
+            <div class="felt"><label for="epost">E-post</label><input id="epost" name="E-post" type="email" autocomplete="email" required maxlength="160"><span class="feiltekst" id="epost-feil"></span></div>
+            <div class="felt"><label for="tlf">Mobil</label><input id="tlf" name="Telefon" type="tel" autocomplete="tel" inputmode="tel" required maxlength="24" placeholder="f.eks. 912 34 567"><span class="feiltekst" id="tlf-feil"></span></div>
+          </div>
+          <div class="felt"><label for="melding">Fortell gjerne litt om organisasjonen <span class="valgfri">(valgfritt)</span></label>
+            <textarea id="melding" name="Melding" rows="3" maxlength="2000" placeholder="F.eks. antall lag eller avdelinger, og hvordan dere registrerer timer i dag"></textarea></div>
+
+          <fieldset aria-describedby="samtykke-hjelp samtykke-feil">
+            <legend>Hvordan vil du at vi kontakter deg?</legend>
+            <p class="hjelp" id="samtykke-hjelp">Kryss av for det du samtykker til. Du kan trekke samtykket når som helst.</p>
+            <label class="valg"><input type="checkbox" name="Samtykke e-post" id="s-epost"> E-post om piloten og oppstart</label>
+            <label class="valg"><input type="checkbox" name="Samtykke mobil" id="s-mobil"> Telefon eller SMS om piloten</label>
+            <label class="valg"><input type="checkbox" name="Samtykke produktinfo" id="s-info"> Nyheter og produktinformasjon om Frivilligtimer på e-post</label>
+            <label class="valg"><input type="checkbox" name="Samtykke undersokelser" id="s-test"> Invitasjoner til korte brukerundersøkelser og tester</label>
+            <span class="feiltekst" id="samtykke-feil"></span>
+          </fieldset>
+
+          <div class="krav">
+            <label class="valg"><input type="checkbox" id="s-personvern" required aria-describedby="personvern-feil"> <span>Jeg har lest <a href="#personvern">hvordan opplysningene brukes</a>, og godtar at de lagres for å følge opp interessen.</span></label>
+            <span class="feiltekst" id="personvern-feil"></span>
+          </div>
+
+          <div class="honning" aria-hidden="true"><label for="hp">Ikke fyll ut</label><input id="hp" name="_honey" type="text" tabindex="-1" autocomplete="off"></div>
+          <button class="knapp" id="send" type="submit">Send interesse</button>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
       </form>
     </div>
+  </section>
+</main>
 
-    <div id="a-arr" hidden>
-      <div class="card">
-        <strong>Arrangement og aktiviteter</strong>
-        <label>Avdeling<select id="xav"></select></label>
-        <div id="xmsg" class="msg"></div>
-        <div id="xliste"></div>
-      </div>
-      <div class="card">
-        <strong>Nytt arrangement</strong>
-        <div class="row" style="grid-template-columns:1fr auto">
-          <input id="xnavn" type="text" placeholder="Navn på arrangement" maxlength="120" aria-label="Navn på nytt arrangement">
-          <button type="button" id="xlegg" class="sm">Legg til</button>
-        </div>
-      </div>
+<footer class="bunn">
+  <div class="wrap">
+    <div id="personvern">
+      <h3>Personvern</h3>
+      <p>Vi bruker navn, e-post, mobilnummer og organisasjonsnavn bare til å følge opp interessen for piloten, og bare på de måtene du har samtykket til. Opplysningene lagres i Frivilligtimers database hos Supabase, der bare våre administratorer har tilgang, og vi får et varsel på e-post til <a href="mailto:info@frivilligtimer.no">info@frivilligtimer.no</a> via skjematjenesten FormSubmit. De deles ikke med andre, og slettes når de ikke lenger trengs for å følge opp piloten.</p>
+      <p>Vil du se, endre eller slette opplysningene, eller trekke et samtykke, skriv til <a href="mailto:info@frivilligtimer.no">info@frivilligtimer.no</a>.</p>
     </div>
-
-    <div id="a-org" hidden>
-      <div class="card">
-        <strong>Organisasjonsnivåer</strong>
-        <span class="hint">Inntil 5 nivåer. Avdelinger henger under et nivå. Du administrerer nivået du er satt på og alt under. Et nivå kan ikke flyttes etter opprettelse.</span>
-        <div id="omsg2" class="msg"></div>
-        <div id="oliste"></div>
-      </div>
-      <div class="card">
-        <strong>Nytt nivå</strong>
-        <label>Opprettes under<select id="nnode"></select></label>
-        <div class="row" style="grid-template-columns:1fr auto">
-          <input id="nnavn" type="text" placeholder="Navn på nivå" maxlength="80" aria-label="Navn på nytt nivå">
-          <button type="button" id="nlegg" class="sm">Legg til</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="a-avd" hidden>
-      <div class="card">
-        <strong>Avdelinger</strong>
-        <div id="amsg" class="msg"></div>
-        <div id="aliste"></div>
-      </div>
-      <div class="card">
-        <strong>Ny avdeling</strong>
-        <label>Hører til nivå<select id="anode"></select></label>
-        <div class="row" style="grid-template-columns:1fr auto">
-          <input id="anavn" type="text" placeholder="Navn på avdeling" maxlength="80" aria-label="Navn på ny avdeling">
-          <button type="button" id="alegg" class="sm">Legg til</button>
-        </div>
-      </div>
+    <div>
+      <h3>Kontakt</h3>
+      <p><a href="mailto:info@frivilligtimer.no">info@frivilligtimer.no</a></p>
+      <p>Bildene og videoene viser fiktive eksempeldata. Organisasjoner, lag og personer er oppdiktet.</p>
     </div>
   </div>
-</section>
+</footer>
 
-</main>
 <script>
-// === KONFIGURASJON: lim inn fra Supabase (Project Settings > API) ===
-const SUPABASE_URL = "https://ndnzjpiyjjydaadqglbs.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kbnpqcGl5amp5ZGFhZHFnbGJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMTA5ODMsImV4cCI6MjEwNjU4Njk4M30.UJETMuVoLRntrOW_a-7NUfi36exPYqRHf3OBc7fIpBg";
-// ====================================================================
+// === Innsending =====================================================================
+// 1) Meldingen lagres i Supabase-tabellen pilot_interesse (schema_pilotinteresse.sql).
+//    Bruk samme verdier som i appen: Supabase → Project Settings → API (Project URL og anon/publishable key).
+//    Nøkkelen kan ligge åpent: siden kan bare sende inn via funksjonen, ikke lese tabellen.
+const SUPABASE_URL = "https://DITT-PROSJEKT.supabase.co";
+const SUPABASE_ANON_KEY = "DIN-ANON-KEY";
+// 2) I tillegg sendes et e-postvarsel via FormSubmit (sett SEND_EPOST = false for å slå av).
+//    Første innsending sender en aktiveringslenke til info@frivilligtimer.no som må bekreftes én gang.
+const SEND_EPOST = true;
+const MOTTAKER = "info@frivilligtimer.no";
+const ENDEPUNKT = "https://formsubmit.co/ajax/" + MOTTAKER;
+const SAMTYKKE_VERSJON = "2026-10-25";
+// ====================================================================================
+
 const $ = id => document.getElementById(id);
-const KEY = "ft_session", ORGKEY = "ft_org", AVDKEY = "ft_avd";
-let S = null, avdId = null, ADMIN = false, ORG = null, TILG = null, AVDS = [], NODER = [], TOPS = [];
+const skjema = $("skjema"), status = $("status"), send = $("send");
 
-const load = () => { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
-const save = s => { try { s ? localStorage.setItem(KEY, JSON.stringify(s)) : localStorage.removeItem(KEY); } catch {} };
-const lagre = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, String(v)); } catch {} };
-const hent = k => { try { return localStorage.getItem(k); } catch { return null; } };
-const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function show(el, t, c){ el.textContent = t; el.className = "msg " + c; }
-
-async function auth(path, body){
-  const r = await fetch(SUPABASE_URL + "/auth/v1/" + path, {
-    method: "POST", headers: {apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json"}, body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error("auth");
-  const j = await r.json();
-  return {access: j.access_token, refresh: j.refresh_token};
+function feil(id, tekst){
+  const el = $(id), felt = el.closest(".felt");
+  $(id + "-feil").textContent = tekst || "";
+  if (felt) tekst ? felt.setAttribute("data-feil", "") : felt.removeAttribute("data-feil");
+  el.setAttribute("aria-invalid", tekst ? "true" : "false");
+  if (tekst) el.setAttribute("aria-describedby", id + "-feil"); else el.removeAttribute("aria-describedby");
 }
-
-// Alle kall til databasen sier hvilken organisasjon (rot) brukeren er innlogget i. Databasen kontrollerer at brukeren hører til der.
-const orgHode = () => ORG ? {"x-org": String(ORG)} : {};
-async function api(path, opts = {}, retry = true){
-  const r = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
-    ...opts,
-    headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + S.access, "Content-Type": "application/json", ...orgHode(), ...(opts.headers || {})}
-  });
-  if (r.status === 401 && retry) {
-    try { S = await auth("token?grant_type=refresh_token", {refresh_token: S.refresh}); save(S); return api(path, opts, false); }
-    catch { logout(); throw new Error("utlopt"); }
-  }
-  if (!r.ok) { const e = new Error("api"); e.status = r.status; try { const j = await r.json(); e.kode = j.code; e.melding = j.message; } catch {} throw e; }
-  return r;
-}
-const rpc = (navn, args = {}) => api("rpc/" + navn, {method: "POST", body: JSON.stringify(args)}).then(r => r.json());
-
-function view(n){ for (const i of ["login","reset","setpw","orgvelg","app"]) $(i).hidden = i !== n; }
-function logout(){ S = null; avdId = null; ORG = null; TILG = null; AVDS = []; NODER = []; TOPS = []; save(null); lagre(ORGKEY, null); lagre(AVDKEY, null); view("login"); }
-
-// fersk = nettopp logget inn med passord (da velger brukeren organisasjon på nytt hvis det finnes flere)
-async function start(fersk){
-  try {
-    ORG = null;
-    TILG = await rpc("min_tilgang");
-    const rot = TILG.rotter.filter(r => r.tilknyttet);
-    if (!rot.length && !TILG.super) { logout(); show($("lmsg"), "Brukeren er ikke koblet til en avdeling. Kontakt administrator.", "err"); return; }
-    let valg = null;
-    if (rot.length === 1) valg = rot[0].id;
-    else if (rot.length > 1 && !fersk && rot.some(r => r.id === +hent(ORGKEY))) valg = +hent(ORGKEY);
-    if (rot.length > 1 && valg == null) { visOrgvalg(rot); return; }
-    await gaaInn(valg);
-  } catch { if (S) { logout(); show($("lmsg"), "Kunne ikke hente tilgang.", "err"); } }
-}
-function visOrgvalg(rot){
-  $("orgliste").innerHTML = rot.map(r => `<button type="button" class="sec orgbtn" data-id="${r.id}">${esc(r.navn)}<small>${r.admin ? "Administrator" : "Bruker"}</small></button>`).join("");
-  view("orgvelg");
-}
-$("orgliste").onclick = async e => {
-  const b = e.target.closest("button[data-id]"); if (!b) return;
-  try { await gaaInn(+b.dataset.id); } catch { if (S) { view("orgvelg"); } }
+const sifre = t => t.replace(/\D/g, "");
+const sjekk = {
+  navn:  v => v.trim().length >= 2 ? "" : "Skriv navnet ditt.",
+  org:   v => v.trim().length >= 2 ? "" : "Skriv navnet på organisasjonen.",
+  epost: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? "" : "Skriv en gyldig e-postadresse, f.eks. navn@laget.no.",
+  tlf:   v => { const d = sifre(v); return /^[+\d\s()-]*$/.test(v.trim()) && d.length >= 8 && d.length <= 15 ? "" : "Skriv et mobilnummer med minst 8 sifre."; }
 };
-$("orgut").onclick = logout;
-$("byttorg").onclick = () => { start(true); };
-
-async function gaaInn(valg){
-  ORG = valg; lagre(ORGKEY, valg);
-  const r = TILG.rotter.find(x => x.id === ORG);
-  ADMIN = !!TILG.super || !!(r && r.admin);
-  $("byttorg").hidden = TILG.rotter.filter(x => x.tilknyttet).length < 2;
-  let d = [];
-  if (ORG) {
-    NODER = await (await api("org_node?select=id,parent_id,navn,nivaa,sti,aktiv,nivaanavn&order=nivaa,navn")).json();
-    d = await (await api("bruker_avdeling?select=avdeling_id,avdeling(id,navn,aktiv,gps_modus,org_id)&user_id=eq." + myId())).json();
-  }
-  AVDS = d.map(x => x.avdeling).filter(a => a && a.aktiv).sort((a, b) => a.navn.localeCompare(b.navn, "nb"));
-  if (!AVDS.length && !ADMIN) { logout(); show($("lmsg"), "Brukeren har ingen aktive avdelinger. Kontakt administrator.", "err"); return; }
-  avdId = AVDS.length ? (AVDS.find(a => a.id === +hent(AVDKEY)) || AVDS[0]).id : null;
-  $("avdnavn").textContent = [r ? r.navn : "", AVDS.length === 1 ? AVDS[0].navn : "", ADMIN ? (TILG.super ? "Super-admin" : "Administrator") : ""].filter(Boolean).join(" · ");
-  $("avdvelgl").hidden = AVDS.length < 2;
-  $("avdvelg").innerHTML = AVDS.map(a => opt(a.id, a.navn + " (" + nodeNavn(a.org_id) + ")", a.id === avdId)).join("");
-  $("tab-adm").hidden = !ADMIN;
-  $("tab-reg").hidden = $("tab-ov").hidden = !avdId;
-  view("app");
-  $("dato").valueAsDate = new Date();
-  adminKlar = false; ST = null; RAP = null; $("rap-ut").innerHTML = "";
-  settAvd(avdId, true);
-  tab(avdId ? "reg" : "adm");
+for (const id of Object.keys(sjekk)) {
+  $(id).addEventListener("blur", () => { if ($(id).value) feil(id, sjekk[id]($(id).value)); });
+  $(id).addEventListener("input", () => { if ($(id).getAttribute("aria-invalid") === "true") feil(id, sjekk[id]($(id).value)); });
 }
-function settAvd(id, ny){
-  avdId = id; lagre(AVDKEY, id);
-  const a = AVDS.find(x => x.id === id);
-  GPSM = (a && a.gps_modus) || "av"; pos = null; $("gpsinp").value = ""; setupGps();
-  ST = null; KAT = [];
-  if (avdId) { hist(); loadKatalog(); if (!ny && !$("p-ov").hidden) loadStats(); }
-}
-$("avdvelg").onchange = () => settAvd(+$("avdvelg").value);
+const kontaktValg = () => $("s-epost").checked || $("s-mobil").checked;
+["s-epost", "s-mobil"].forEach(id => $(id).addEventListener("change", () => { if (kontaktValg()) $("samtykke-feil").textContent = ""; }));
+$("s-personvern").addEventListener("change", () => { if ($("s-personvern").checked) $("personvern-feil").textContent = ""; });
 
-async function hist(){
+function valider(){
+  let forste = null;
+  for (const id of Object.keys(sjekk)) { const t = sjekk[id]($(id).value); feil(id, t); if (t && !forste) forste = $(id); }
+  if (!kontaktValg()) { $("samtykke-feil").textContent = "Velg e-post eller telefon, så vi kan kontakte deg om piloten."; forste = forste || $("s-epost"); }
+  if (!$("s-personvern").checked) { $("personvern-feil").textContent = "Bekreft at du har lest hvordan opplysningene brukes."; forste = forste || $("s-personvern"); }
+  if (forste) forste.focus();
+  return !forste;
+}
+const jaNei = id => $(id).checked ? "Ja" : "Nei";
+
+skjema.addEventListener("submit", async e => {
+  e.preventDefault();
+  status.className = "status"; status.textContent = "";
+  if ($("hp").value) return;                   // robot
+  if (!valider()) return;
+  const data = {
+    "Navn": $("navn").value.trim(),
+    "Organisasjon": $("org").value.trim(),
+    "E-post": $("epost").value.trim(),
+    "Telefon": $("tlf").value.trim(),
+    "Melding": $("melding").value.trim() || "–",
+    "Samtykke: e-post om pilot": jaNei("s-epost"),
+    "Samtykke: telefon/SMS om pilot": jaNei("s-mobil"),
+    "Samtykke: nyheter og produktinformasjon": jaNei("s-info"),
+    "Samtykke: brukerundersøkelser og tester": jaNei("s-test"),
+    "Personvern lest og godtatt": "Ja",
+    "Samtykketekst versjon": SAMTYKKE_VERSJON,
+    "Sendt": new Date().toLocaleString("nb-NO", {timeZone: "Europe/Oslo"}),
+    "Side": location.href.split("#")[0],
+    _subject: "Pilotinteresse: " + $("org").value.trim(),
+    _replyto: $("epost").value.trim(),
+    _template: "table",
+    _captcha: "false",
+    _honey: ""
+  };
+  send.disabled = true; send.textContent = "Sender …";
   try {
-    const d = await (await api("frivillig_timer?select=arrangement,aktivitet,dato,antall_ressurser,timer_per_ressurs,totalt_timer,frivillig_bilde(count)&avdeling_id=eq." + avdId + "&order=opprettet.desc&limit=5")).json();
-    $("hist").innerHTML = d.length ? d.map(h => {
-      const n = (h.frivillig_bilde && h.frivillig_bilde[0] && h.frivillig_bilde[0].count) || 0;
-      return `<div class="item"><div>${esc(h.arrangement)} › ${esc(h.aktivitet)}<small>${esc(h.dato)} · ${h.antall_ressurser} × ${h.timer_per_ressurs} t${n ? " · " + n + (n > 1 ? " bilder" : " bilde") : ""}</small></div><b>${h.totalt_timer} t</b></div>`;
-    }).join("") : '<div class="item"><small>Ingen registreringer ennå</small></div>';
-  } catch { $("hist").innerHTML = ""; }
-}
-
-/* ---------- Faner ---------- */
-function tab(t){
-  for (const k of ["reg", "ov", "adm"]) { $("p-" + k).hidden = t !== k; $("tab-" + k).classList.toggle("on", t === k); }
-  if (t === "ov") loadStats();
-  if (t === "adm") loadAdmin();
-}
-document.querySelectorAll(".tab").forEach(b => b.onclick = () => tab(b.dataset.t));
-document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
-  who = b.dataset.w;
-  document.querySelectorAll(".seg button").forEach(x => x.classList.toggle("on", x === b));
-  if (ST) renderStats();
+    // 1) Lagre i databasen. Valideringsfeil fra databasen vises for brukeren; andre feil går videre til e-post.
+    let lagret = false;
+    if (!SUPABASE_URL.includes("DITT-PROSJEKT")) {
+      try {
+        const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/registrer_pilotinteresse", {
+          method: "POST",
+          headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+          body: JSON.stringify({
+            p_navn: data["Navn"], p_organisasjon: data["Organisasjon"], p_epost: data["E-post"], p_telefon: data["Telefon"],
+            p_melding: $("melding").value.trim() || null,
+            p_samtykke_epost: $("s-epost").checked, p_samtykke_mobil: $("s-mobil").checked,
+            p_samtykke_produktinfo: $("s-info").checked, p_samtykke_undersokelser: $("s-test").checked,
+            p_personvern: $("s-personvern").checked, p_samtykke_versjon: SAMTYKKE_VERSJON,
+            p_kilde: data["Side"], p_honning: $("hp").value || null
+          })
+        });
+        if (r.ok) lagret = true;
+        else {
+          const j = await r.json().catch(() => ({}));
+          if (j.code === "P0001" && j.message) {          // melding fra databasen, f.eks. ugyldig e-post eller for mange innsendinger
+            status.className = "status feil"; status.textContent = j.message; return;
+          }
+        }
+      } catch (_) { /* nettverksfeil: prøv e-post */ }
+    }
+    // 2) E-postvarsel. Feiler det, men meldingen er lagret, er alt i orden for brukeren.
+    let epostOk = false;
+    if (SEND_EPOST) {
+      try {
+        const r = await fetch(ENDEPUNKT, {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"},
+                                          body: JSON.stringify({...data, "Lagret i database": lagret ? "Ja" : "Nei"})});
+        const j = await r.json().catch(() => ({}));
+        epostOk = r.ok && String(j.success) === "true";
+      } catch (_) {}
+    }
+    if (!lagret && !epostOk) throw new Error("ikke sendt");
+    skjema.classList.add("sendt");
+    status.className = "status ok";
+    status.textContent = `Takk, ${data["Navn"].split(" ")[0]}! Vi har mottatt interessen fra ${data["Organisasjon"]} og tar kontakt.`;
+    skjema.scrollIntoView({block: "nearest"});
+  } catch (err) {
+    const body = Object.entries(data).filter(([k]) => !k.startsWith("_")).map(([k, v]) => k + ": " + v).join("\n");
+    status.className = "status feil";
+    status.innerHTML = 'Skjemaet ble ikke sendt. Prøv igjen om litt, eller <a id="epostlenke">send det samme på e-post</a>.';
+    $("epostlenke").href = "mailto:" + MOTTAKER + "?subject=" + encodeURIComponent(data._subject) + "&body=" + encodeURIComponent(body);
+  } finally {
+    send.disabled = false; send.textContent = "Send interesse";
+  }
 });
 
-/* ---------- Statistikk ---------- */
-const MN = ["jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des"];
-const fmt = n => (+n).toLocaleString("nb-NO", {maximumFractionDigits: 1});
-let ST = null, who = "avd";
-
-function myId(){
-  try { return JSON.parse(atob(S.access.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).sub; } catch { return null; }
-}
-async function loadStats(){
-  show($("omsg"), "", "");
-  try {
-    ST = await (await api("v_maned_oppsummering?select=avdeling_id,bruker_id,maned,timer")).json();
-    renderStats();
-    $("arrtbl").innerHTML = arrGruppe(await rpc("rapport_arrangement", {p_node: null, p_avdeling: avdId, p_fra: "2000-01-01", p_til: "2100-12-31"}));
-  } catch { if (S) show($("omsg"), "Kunne ikke hente oversikt.", "err"); }
-}
-// Timer per arrangement med aktivitetene gruppert under (rader fra rapport_arrangement)
-function arrGruppe(rows){
-  const m = new Map();
-  rows.forEach(r => {
-    const k = r.arrangement.trim().toLowerCase(), a = m.get(k) || m.set(k, {navn: r.arrangement, timer: 0, reg: 0, akt: []}).get(k);
-    if (r.aktivitet == null) { a.timer = Number(r.timer); a.reg = Number(r.registreringer); } else a.akt.push(r);
-  });
-  const l = [...m.values()].sort((a, b) => b.timer - a.timer);
-  if (!l.length) return '<div class="item"><small>Ingen registreringer i perioden</small></div>';
-  return '<table class="tv"><tr><th>Arrangement / aktivitet</th><th>Timer</th><th>Reg.</th></tr>' + l.map(a =>
-    `<tr class="ar1"><td>${esc(a.navn)}</td><td>${fmt(a.timer)}</td><td>${a.reg}</td></tr>` +
-    a.akt.sort((x, y) => Number(y.timer) - Number(x.timer)).map(k => `<tr class="ak"><td>${esc(k.aktivitet)}</td><td>${fmt(k.timer)}</td><td>${k.registreringer}</td></tr>`).join("")).join("") +
-    `<tr><td><b>Sum</b></td><td><b>${fmt(l.reduce((t, a) => t + a.timer, 0))}</b></td><td><b>${l.reduce((t, a) => t + a.reg, 0)}</b></td></tr></table>`;
-}
-function sums(mineOnly){
-  const m = new Map(), me = myId();
-  for (const r of ST) {
-    if (r.avdeling_id !== avdId) continue;
-    if (mineOnly && r.bruker_id !== me) continue;
-    const k = String(r.maned).slice(0, 7);
-    m.set(k, (m.get(k) || 0) + Number(r.timer));
-  }
-  return m;
-}
-const total = m => [...m.values()].reduce((a, b) => a + b, 0);
-const niceMax = v => { if (v <= 0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
-const lab = k => MN[+k.slice(5) - 1] + " " + k.slice(0, 4);
-
-function renderStats(){
-  const now = new Date(), nk = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
-  const avd = sums(false), meg = sums(true);
-  $("k1").textContent = fmt(total(meg)); $("k2").textContent = fmt(total(avd));
-  $("k3").textContent = fmt(meg.get(nk) || 0); $("k4").textContent = fmt(avd.get(nk) || 0);
-
-  const all = [...avd.keys(), nk].sort();
-  let [y, mo] = all[0].split("-").map(Number); const last = all[all.length - 1], keys = [];
-  for (;;) { const k = y + "-" + String(mo).padStart(2, "0"); if (k > last) break; keys.push(k); if (++mo > 12) { mo = 1; y++; } }
-
-  const src = who === "avd" ? avd : meg;
-  let run = 0;
-  const vals = keys.map(k => src.get(k) || 0), cum = vals.map(v => (run += v));
-  const n = Math.min(12, keys.length), kk = keys.slice(-n);
-  $("c1").innerHTML = chart(vals.slice(-n), kk, "bar");
-  $("c2").innerHTML = chart(cum.slice(-n), kk, "line");
-  $("tbl").innerHTML = '<table class="tv"><tr><th>Måned</th><th>Timer</th><th>Akkumulert</th></tr>' +
-    kk.map((k, i) => `<tr><td>${lab(k)}</td><td>${fmt(vals.slice(-n)[i])}</td><td>${fmt(cum.slice(-n)[i])}</td></tr>`).reverse().join("") + "</table>";
-}
-
-function chart(vals, keys, kind){
-  const W = 360, H = 190, L = 42, R = 10, T = 14, B = 34, iw = W - L - R, ih = H - T - B;
-  const max = niceMax(Math.max(...vals, 0)), y = v => T + ih - (v / max) * ih;
-  const n = vals.length, step = iw / n, cx = i => L + i * step + step / 2;
-  let g = "";
-  for (const t of [0, .5, 1]) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(max * t)}" y2="${y(max * t)}"/><text class="tx" x="${L - 5}" y="${y(max * t) + 3}" text-anchor="end">${fmt(max * t)}</text>`;
-  let b = "";
-  if (kind === "bar") {
-    const bw = Math.min(26, Math.max(3, step * .6));
-    vals.forEach((v, i) => { if (v > 0) b += `<path class="bar" d="M${cx(i) - bw / 2},${y(0)}V${y(v) + 3}a3,3 0 0 1 3,-3h${bw - 6}a3,3 0 0 1 3,3V${y(0)}z"><title>${lab(keys[i])}: ${fmt(v)} timer</title></path>`; });
-  } else {
-    const pts = vals.map((v, i) => [cx(i), y(v)]);
-    if (n > 1) b += `<path class="ar" d="M${pts[0][0]},${y(0)}${pts.map(p => "L" + p[0] + "," + p[1]).join("")}L${pts[n - 1][0]},${y(0)}z"/><path class="ln" d="M${pts.map(p => p[0] + "," + p[1]).join("L")}"/>`;
-    pts.forEach((p, i) => { if (n <= 12 && (i === n - 1 || n <= 6)) b += `<circle class="dt" cx="${p[0]}" cy="${p[1]}" r="4"><title>${lab(keys[i])}: ${fmt(vals[i])} timer</title></circle>`; });
-    b += `<text class="tx" style="fill:var(--tx);font-weight:600" x="${pts[n - 1][0] + 6}" y="${Math.max(10, pts[n - 1][1] - 12)}" text-anchor="end">${fmt(vals[n - 1])} t</text>`;
-  }
-  const xl = keys.map((k, i) => `<text class="tx" x="${cx(i)}" y="${H - 18}" text-anchor="middle">${MN[+k.slice(5) - 1]}</text>` +
-    (i === 0 || k.endsWith("-01") ? `<text class="tx" x="${cx(i)}" y="${H - 6}" text-anchor="middle">${k.slice(0, 4)}</text>` : "")).join("");
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${kind === "bar" ? "Timer per måned" : "Akkumulert antall timer"}">${g}${b}${xl}</svg>`;
-}
-
-/* ---------- Admin ---------- */
-let AVD = [], BRUKERE = [], redig = null, RAP = null, TH = {}, adminSub = "rap", adminKlar = false;
-const nbilder = r => (r.frivillig_bilde && r.frivillig_bilde[0] && r.frivillig_bilde[0].count) || 0;
-const NB = " ";
-
-async function fn(handling, data = {}, retry = true){
-  const r = await fetch(SUPABASE_URL + "/functions/v1/admin-brukere", {
-    method: "POST",
-    headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + S.access, "Content-Type": "application/json", ...orgHode()},
-    body: JSON.stringify({handling, ...data})
-  });
-  if (r.status === 401 && retry && S.refresh) {
-    try { S = await auth("token?grant_type=refresh_token", {refresh_token: S.refresh}); save(S); } catch { logout(); throw new Error("utlopt"); }
-    return fn(handling, data, false);
-  }
-  if (r.status === 404) throw new Error("Funksjonen «admin-brukere» er ikke installert i Supabase (se veiledningen).");
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.feil || "Feil " + r.status);
-  return j;
-}
-
-/* --- Organisasjonstreet: hva administratoren har tilgang til --- */
-const nodeById = id => NODER.find(n => n.id === id);
-const nodeNavn = id => (nodeById(id) || {}).navn || "Ukjent";
-const avNavn = id => (AVD.find(a => a.id === id) || AVDS.find(a => a.id === id) || {}).navn || "Ukjent";
-const iOmr = id => { const n = nodeById(id); return !!n && (!!TILG.super || n.sti.some(s => TOPS.includes(s))); };
-const nivaaNavn = n => { const r = nodeById(n.sti[0]); return (r && r.nivaanavn && r.nivaanavn[n.nivaa - 1]) || "Nivå " + n.nivaa; };
-const nodeEtikett = n => NB.repeat((n.nivaa - 1) * 2) + n.navn + (n.aktiv ? "" : " (deaktivert)");
-const iNode = (a, node) => node == null || (nodeById(a.org_id) ? nodeById(a.org_id).sti.includes(node) : false);
-function tre(noder){   // dybde først: overordnet før underordnet, søsken alfabetisk
-  const ids = new Set(noder.map(n => n.id)), barn = new Map(), ut = [];
-  const sort = l => l.sort((a, b) => a.navn.localeCompare(b.navn, "nb"));
-  noder.forEach(n => { const k = ids.has(n.parent_id) ? n.parent_id : 0; (barn.get(k) || barn.set(k, []).get(k)).push(n); });
-  const gaa = n => { ut.push(n); sort(barn.get(n.id) || []).forEach(gaa); };
-  sort(barn.get(0) || []).forEach(gaa);
-  return ut;
-}
-const omrNoder = () => tre(NODER.filter(n => iOmr(n.id)));
-
-async function loadOrg(){
-  NODER = await (await api("org_node?select=id,parent_id,navn,nivaa,sti,aktiv,nivaanavn&order=nivaa,navn")).json();
-  TOPS = TILG.super ? NODER.filter(n => !n.parent_id).map(n => n.id)
-    : (await (await api("org_admin?select=org_id&user_id=eq." + myId())).json()).map(x => x.org_id);
-}
-async function loadAvd(){
-  AVD = (await (await api("avdeling?select=id,navn,aktiv,gps_modus,org_id&order=navn")).json()).filter(a => iOmr(a.org_id));
-}
-function behold(el, html){ const v = el.value; el.innerHTML = html; if ([...el.options].some(o => o.value === v)) el.value = v; }
-function fillRav(){
-  const node = $("rnode").value ? +$("rnode").value : null;
-  behold($("rav"), opt("", "Alle avdelinger i området") + AVD.filter(a => iNode(a, node)).map(a => opt(a.id, a.navn + (a.aktiv ? "" : " (deaktivert)"))).join(""));
-}
-function fillSelects(){
-  const noder = omrNoder();
-  behold($("rnode"), (TILG.super ? opt("", "Alle organisasjoner") : "") + noder.map(n => opt(n.id, nodeEtikett(n))).join(""));
-  fillRav();
-  behold($("xav"), AVD.map(a => opt(a.id, a.navn + " (" + nodeNavn(a.org_id) + ")" + (a.aktiv ? "" : " – deaktivert"))).join(""));
-  behold($("anode"), noder.map(n => opt(n.id, nodeEtikett(n))).join(""));
-  behold($("nnode"), (TILG.super ? opt("", "(ny organisasjon – toppnivå)") : "") + noder.filter(n => n.nivaa < 5).map(n => opt(n.id, nodeEtikett(n))).join(""));
-}
-$("rnode").onchange = fillRav;
-
-async function loadAdmin(){
-  try {
-    await loadOrg(); await loadAvd(); fillSelects();
-    if (!adminKlar) { const n = new Date(); $("rfra").value = n.getFullYear() + "-01"; $("rtil").value = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0"); adminKlar = true; }
-    sub(adminSub);
-  } catch { if (S) show($("rmsg2"), "Kunne ikke hente organisasjonen.", "err"); }
-}
-function sub(n){
-  adminSub = n;
-  for (const k of ["rap", "bru", "org", "avd", "arr"]) { $("a-" + k).hidden = k !== n; document.querySelector(`.sub button[data-a="${k}"]`).classList.toggle("on", k === n); }
-  if (n === "bru") loadBrukere();
-  if (n === "org") renderOrg();
-  if (n === "avd") renderAvd();
-  if (n === "arr") loadArr();
-}
-document.querySelectorAll(".sub button").forEach(b => b.onclick = () => sub(b.dataset.a));
-
-/* --- Rapporter: nivåene rulles opp. Timer per nivå, og per arrangement med aktivitetene gruppert --- */
-$("rf2").onsubmit = async e => {
-  e.preventDefault(); show($("rmsg2"), "", "");
-  const fra = $("rfra").value, til = $("rtil").value, node = $("rnode").value ? +$("rnode").value : null, av = $("rav").value ? +$("rav").value : null;
-  if (!fra || !til || fra > til) { show($("rmsg2"), "Velg en gyldig periode.", "err"); return; }
-  const [ty, tm] = til.split("-").map(Number), slutt = `${til}-${String(new Date(ty, tm, 0).getDate()).padStart(2, "0")}`;
-  const P = {p_fra: fra + "-01", p_til: slutt};
-  $("rbtn2").disabled = true;
-  try {
-    const [mnd, enh, arr] = await Promise.all([
-      rpc("rapport_maned", {...P, p_node: node, p_avdeling: av}),
-      av ? [] : rpc("rapport_enheter", {...P, p_node: node}),
-      av ? rpc("rapport_arrangement", {...P, p_node: null, p_avdeling: av}) : rpc("rapport_arr_per_enhet", {...P, p_node: node})
-    ]);
-    let q = `frivillig_timer?select=id,avdeling_id,arrangement,aktivitet,dato,antall_ressurser,timer_per_ressurs,totalt_timer,kommentar,breddegrad,lengdegrad,frivillig_bilde(count)&dato=gte.${fra}-01&dato=lte.${slutt}&order=dato.desc,id.desc&limit=200`;
-    const ids = av ? [av] : (node == null ? null : AVD.filter(a => iNode(a, node)).map(a => a.id));
-    if (ids) q += "&avdeling_id=in.(" + (ids.length ? ids.join(",") : "0") + ")";
-    RAP = {mnd, enh, arr, rows: await (await api(q)).json(), av, node, fra, til}; TH = {};
-    visRapport();
-    if ($("rall").checked) bilderAlle();
-  } catch { if (S) show($("rmsg2"), "Kunne ikke hente rapporten.", "err"); }
-  $("rbtn2").disabled = false;
-};
-
-function nivaaTabell(enh, tot){
-  const noder = enh.filter(r => r.enhet_type === "node"), avds = enh.filter(r => r.enhet_type === "avdeling");
-  const ider = new Set(noder.map(r => r.enhet_id)), barn = new Map(), avd = new Map(), ut = [];
-  const push = (m, k, v) => (m.get(k) || m.set(k, []).get(k)).push(v), sort = l => l.sort((a, b) => a.navn.localeCompare(b.navn, "nb"));
-  noder.forEach(r => push(barn, ider.has(r.forelder_id) ? r.forelder_id : 0, r)); avds.forEach(r => push(avd, r.forelder_id, r));
-  const gaa = (r, d) => { ut.push({node: true, r, d}); sort(avd.get(r.enhet_id) || []).forEach(a => ut.push({node: false, r: a, d: d + 1})); sort(barn.get(r.enhet_id) || []).forEach(k => gaa(k, d + 1)); };
-  sort(barn.get(0) || []).forEach(r => gaa(r, 0));
-  const vis = ut.filter(x => x.r.aktiv || Number(x.r.timer) > 0);
-  const mx = Math.max(...vis.map(x => Number(x.r.timer)), 1);
-  return `<table class="tv"><tr><th>Nivå / avdeling</th><th>Timer</th><th>Andel</th><th>Reg.</th></tr>` + vis.map(x => {
-    const t = Number(x.r.timer), n = x.node ? nodeById(x.r.enhet_id) : null;
-    return `<tr class="${x.node ? "nd" : "av"}"><td style="padding-left:${x.d * 14 + 4}px">${esc(x.r.navn)} <span class="hint">${x.node ? esc(n ? nivaaNavn(n) : "Nivå " + x.r.nivaa) : "avdeling"}</span><div class="bar-h"><i style="width:${(t / mx * 100).toFixed(1)}%"></i></div></td>
-      <td>${fmt(t)}</td><td>${tot ? Math.round(t / tot * 100) : 0} %</td><td>${x.r.registreringer}</td></tr>`;
-  }).join("") + "</table>";
-}
-
-function arrMatrise(arr, enh){
-  const navnEnhet = k => { const [t, id] = k.split(":"); const f = enh.find(r => r.enhet_type === t && r.enhet_id === +id); return f ? f.navn : (t === "node" ? nodeNavn(+id) : avNavn(+id)); };
-  const tot = new Map(), A = new Map();
-  const ny = (m, k, navn) => m.get(k) || m.set(k, {navn, per: new Map(), total: 0, akt: new Map()}).get(k);
-  for (const r of arr) {
-    const e = r.enhet_type + ":" + r.enhet_id, t = Number(r.timer), a = ny(A, r.arrangement.trim().toLowerCase(), r.arrangement);
-    if (r.aktivitet == null) { a.per.set(e, (a.per.get(e) || 0) + t); a.total += t; tot.set(e, (tot.get(e) || 0) + t); }
-    else { const x = ny(a.akt, r.aktivitet.trim().toLowerCase(), r.aktivitet); x.per.set(e, (x.per.get(e) || 0) + t); x.total += t; }
-  }
-  const enheter = [...tot.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
-  const celle = (p, e) => `<td>${p.get(e) ? fmt(p.get(e)) : "–"}</td>`;
-  const rader = [...A.values()].sort((a, b) => b.total - a.total).map(a =>
-    `<tr class="ar1"><td>${esc(a.navn)}</td>${enheter.map(e => celle(a.per, e)).join("")}<td>${fmt(a.total)}</td></tr>` +
-    [...a.akt.values()].sort((x, y) => y.total - x.total).map(k => `<tr class="ak"><td>${esc(k.navn)}</td>${enheter.map(e => celle(k.per, e)).join("")}<td>${fmt(k.total)}</td></tr>`).join("")).join("");
-  const sum = [...tot.values()].reduce((a, b) => a + b, 0);
-  return `<div class="mx"><table class="tv"><tr><th>Arrangement / aktivitet</th>${enheter.map(e => `<th>${esc(navnEnhet(e))}</th>`).join("")}<th>Sum</th></tr>${rader}
-    <tr><td><b>Sum</b></td>${enheter.map(e => `<td><b>${fmt(tot.get(e))}</b></td>`).join("")}<td><b>${fmt(sum)}</b></td></tr></table></div>`;
-}
-
-function visRapport(){
-  const {mnd, enh, arr, rows, av, node, fra, til} = RAP;
-  const M = new Map(mnd.map(m => [String(m.maned).slice(0, 7), Number(m.timer)]));
-  const sum = f => mnd.reduce((a, m) => a + Number(m[f]), 0), tot = sum("timer");
-  const nArr = new Set(arr.filter(r => r.aktivitet == null).map(r => r.arrangement.trim().toLowerCase())).size;
-  const keys = []; let [y, m] = fra.split("-").map(Number);
-  while (y + "-" + String(m).padStart(2, "0") <= til) { keys.push(y + "-" + String(m).padStart(2, "0")); if (++m > 12) { m = 1; y++; } }
-  const vals = keys.map(k => M.get(k) || 0); let run = 0; const cum = vals.map(v => (run += v));
-  const n = Math.min(12, keys.length), kk = keys.slice(-n);
-  const nn = node ? nodeById(node) : null;
-  let html = `<div class="rh"><h2>Rapport – ${av ? esc(avNavn(av)) : nn ? esc(nn.navn) : "alle organisasjoner"}</h2><button type="button" class="sec sm noprint" id="rprint">Skriv ut / lagre som PDF</button></div>
-    <div class="hint" style="margin:2px 0 12px">${lab(fra)} – ${lab(til)}${!av && nn ? " · " + esc(nivaaNavn(nn)) + " med underordnede nivåer og avdelinger" : ""}</div>
-    <div class="kpis"><div class="kpi"><span>Timer totalt</span><b>${fmt(tot)}</b></div><div class="kpi"><span>Registreringer</span><b>${sum("registreringer")}</b></div>
-    <div class="kpi"><span>Arrangementer</span><b>${nArr}</b></div><div class="kpi"><span>Ressurser (sum)</span><b>${sum("ressurser")}</b></div></div>`;
-  if (!av) html += `<div class="card"><strong>Timer per nivå</strong><div class="hint">Hvert nivå viser summen av alt under seg: underordnede nivåer og avdelinger.</div>${nivaaTabell(enh, tot)}</div>`;
-  html += `<div class="card"><strong>Timer per arrangement${av ? "" : " og nivå"}</strong><div class="hint">Aktivitetene er gruppert under arrangementet. ${av ? "" : "Kolonnene er enhetene rett under valgt nivå. "}Arrangementer med samme navn slås sammen.</div>${av ? arrGruppe(arr) : arrMatrise(arr, enh)}</div>`;
-  html += `<div class="card"><strong>Timer per måned</strong>${chart(vals.slice(-n), kk, "bar")}</div>
-    <div class="card"><strong>Akkumulert antall timer</strong>${chart(cum.slice(-n), kk, "line")}</div>
-    <div class="card"><strong>Måned for måned</strong><table class="tv"><tr><th>Måned</th><th>Timer</th><th>Akkumulert</th></tr>` +
-    keys.map((k, i) => `<tr><td>${lab(k)}</td><td>${fmt(vals[i])}</td><td>${fmt(cum[i])}</td></tr>`).reverse().join("") + `</table></div>`;
-  html += `<div class="card"><strong>Registreringer${rows.length >= 200 ? " (200 nyeste)" : ""}</strong>` + (rows.length ? rows.map(r => {
-    const nbld = nbilder(r);
-    const sted = r.breddegrad != null ? ` · <a href="https://www.openstreetmap.org/?mlat=${+r.breddegrad}&mlon=${+r.lengdegrad}#map=17/${+r.breddegrad}/${+r.lengdegrad}" target="_blank" rel="noopener">${(+r.breddegrad).toFixed(5)}, ${(+r.lengdegrad).toFixed(5)}</a>` : "";
-    return `<div class="item"><div>${esc(r.arrangement)} › ${esc(r.aktivitet || "")}<small>${esc(r.dato)}${av ? "" : " · " + esc(avNavn(r.avdeling_id))} · ${r.antall_ressurser} × ${r.timer_per_ressurs} t${r.kommentar ? " · " + esc(r.kommentar) : ""}${sted}</small><div class="mini" id="m${r.id}"></div></div>
-      <div style="text-align:right"><b>${fmt(r.totalt_timer)} t</b>${nbld ? `<br><button type="button" class="lnk noprint" data-b="${r.id}">${nbld} ${nbld > 1 ? "bilder" : "bilde"}</button>` : ""}</div></div>`;
-  }).join("") : '<div class="item"><small>Ingen registreringer i perioden</small></div>') + "</div>";
-  $("rap-ut").innerHTML = html;
-}
-
-function miniHtml(id){ return (TH[id] || []).map(t => `<img alt="Bilde fra aktiviteten" src="data:image/jpeg;base64,${esc(t)}">`).join(""); }
-async function bildeFor(id){
-  const el = $("m" + id); if (!el) return;
-  if (el.innerHTML) { el.innerHTML = ""; return; }
-  if (!TH[id]) TH[id] = (await (await api(`frivillig_bilde?timer_id=eq.${id}&select=miniatyr&order=rekkefolge`)).json()).map(x => x.miniatyr).filter(Boolean);
-  el.innerHTML = miniHtml(id);
-}
-async function bilderAlle(){
-  if (!RAP) return;
-  const ids = RAP.rows.filter(r => nbilder(r)).map(r => r.id).slice(0, 100);
-  if (!$("rall").checked) { ids.forEach(id => { const e = $("m" + id); if (e) e.innerHTML = ""; }); return; }
-  try {
-    for (let i = 0; i < ids.length; i += 25) {
-      const d = await (await api(`frivillig_bilde?timer_id=in.(${ids.slice(i, i + 25).join(",")})&select=timer_id,miniatyr&order=timer_id,rekkefolge`)).json();
-      d.forEach(x => { if (x.miniatyr) (TH[x.timer_id] = TH[x.timer_id] || []).push(x.miniatyr); });
-    }
-    ids.forEach(id => { const e = $("m" + id); if (e) e.innerHTML = miniHtml(id); });
-  } catch { if (S) show($("rmsg2"), "Kunne ikke hente bildene.", "err"); }
-}
-$("rall").onchange = () => { if ($("rall").checked) { TH = {}; } bilderAlle(); };
-$("rap-ut").onclick = e => {
-  if (e.target.closest("#rprint")) { window.print(); return; }
-  const b = e.target.closest("button[data-b]"); if (b) bildeFor(b.dataset.b).catch(() => {});
-};
-
-/* --- Brukere: administratoren ser og endrer kun koblinger i eget område --- */
-const sist = d => d ? new Date(d).toLocaleDateString("nb-NO") : "aldri";
-async function loadBrukere(){
-  show($("bmsg"), "", ""); $("bliste").innerHTML = '<div class="item"><small>Laster…</small></div>';
-  try { BRUKERE = await rpc("admin_brukere"); renderBrukere(); }
-  catch (e) { $("bliste").innerHTML = ""; if (S) show($("bmsg"), "Kunne ikke hente brukerne.", "err"); }
-}
-function renderBrukere(){
-  $("bliste").innerHTML = BRUKERE.length ? BRUKERE.map(b => `<div class="item"><div><b style="word-break:break-all">${esc(b.epost)}</b>
-    <small>${b.avdelinger.length ? "Avdeling: " + esc(b.avdelinger.map(a => a.navn).join(", ")) : "Ingen avdeling i ditt område"}</small>
-    ${b.admin_for.length ? `<small>Administrator for: ${esc(b.admin_for.map(n => n.navn).join(", "))}</small>` : ""}
-    <small>${b.er_super ? "Super-admin · " : ""}${b.deaktivert ? "Deaktivert · " : ""}${b.utenfor ? "Har også tilknytning utenfor ditt område · " : ""}sist innlogget ${sist(b.sist_innlogget)}</small></div>
-    <button type="button" class="sec sm" data-id="${esc(b.bruker_id)}">Rediger</button></div>`).join("") : '<div class="item"><small>Ingen brukere</small></div>';
-}
-function sjekkliste(el, items, valgte){
-  el.innerHTML = items.map(i => `<label class="chk"><input type="checkbox" value="${i.v}"${valgte.has(i.v) ? " checked" : ""}> <span>${i.t}</span></label>`).join("") || '<span class="hint">Ingen tilgjengelige</span>';
-}
-const kryssede = el => [...el.querySelectorAll("input:checked")].map(i => +i.value);
-function bform(b){
-  redig = b || null; $("bf").hidden = false; $("btitle").textContent = b ? "Rediger bruker" : "Ny bruker";
-  $("bem").value = b ? b.epost : ""; $("bem").readOnly = !!b;
-  const ut = !!(b && b.utenfor);
-  $("bpw").value = ""; $("bpw").disabled = ut; $("bpw").placeholder = b ? "La stå tom for å beholde" : "Minst 8 tegn (ikke nødvendig hvis brukeren finnes fra før)";
-  sjekkliste($("bavd"), AVD.map(a => ({v: a.id, t: esc(a.navn) + ` <span class="hint">(${esc(nodeNavn(a.org_id))})</span>`})), new Set(b ? b.avdelinger.map(a => a.id) : []));
-  sjekkliste($("bnod"), omrNoder().map(n => ({v: n.id, t: esc(nodeEtikett(n))})), new Set(b ? b.admin_for.map(n => n.id) : []));
-  $("bsuperrad").hidden = !TILG.super; $("bsuper").checked = !!(b && b.er_super);
-  $("bdea").checked = !!(b && b.deaktivert); $("bdea").disabled = ut; $("bdearad").hidden = !b; $("bslett").hidden = !b;
-  $("butenfor").hidden = !ut;
-  $("bslett").textContent = ut ? "Fjern fra mitt område" : "Slett bruker";
-  show($("bmsg2"), "", ""); $("bf").scrollIntoView({behavior: "smooth", block: "nearest"});
-}
-$("bny").onclick = () => bform(null);
-$("bavbryt").onclick = () => { $("bf").hidden = true; redig = null; };
-$("bliste").onclick = e => { const b = e.target.closest("button[data-id]"); if (b) bform(BRUKERE.find(x => x.bruker_id === b.dataset.id)); };
-$("bgen").onclick = () => {
-  const tegn = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789", a = crypto.getRandomValues(new Uint32Array(12));
-  $("bpw").value = [...a].map(x => tegn[x % tegn.length]).join("");
-};
-$("bf").onsubmit = async e => {
-  e.preventDefault(); $("blagre").disabled = true; show($("bmsg2"), "", "");
-  const avdl = kryssede($("bavd")), nod = kryssede($("bnod")), pw = $("bpw").value, erSuper = TILG.super && $("bsuper").checked;
-  try {
-    let ok;
-    if (redig) {
-      const d = {bruker_id: redig.bruker_id, avdelinger: avdl, noder: nod};
-      if (TILG.super) d.er_super = erSuper;
-      if (!redig.utenfor) { d.deaktivert = $("bdea").checked; if (pw) d.passord = pw; }
-      await fn("oppdater", d); ok = "Bruker oppdatert." + (pw && !redig.utenfor ? " Nytt passord: " + pw : "");
-    } else {
-      const r = await fn("opprett", {epost: $("bem").value.trim(), passord: pw, avdelinger: avdl, noder: nod, er_super: erSuper});
-      ok = r.eksisterte ? "Brukeren fantes fra før og er koblet til. Passord og andre tilknytninger er uendret."
-        : "Bruker opprettet. Passord: " + pw + " (gi det videre på en trygg måte; brukeren kan bytte det selv).";
-    }
-    $("bf").hidden = true; redig = null; await loadBrukere(); show($("bmsg"), ok, "ok");
-  } catch (er) { if (S) show($("bmsg2"), er.message, "err"); }
-  $("blagre").disabled = false;
-};
-$("bslett").onclick = async () => {
-  if (!redig) return;
-  const ut = redig.utenfor;
-  if (!confirm(ut ? `Fjerne ${redig.epost} fra ditt område? Kontoen beholdes fordi brukeren har tilknytning andre steder.`
-                  : `Slette brukeren ${redig.epost}? Dette kan ikke angres. Registrerte timer beholdes.`)) return;
-  try {
-    const r = await fn("slett", {bruker_id: redig.bruker_id}); $("bf").hidden = true; redig = null; await loadBrukere();
-    show($("bmsg"), r.kun_koblinger ? "Brukeren er fjernet fra ditt område. Kontoen finnes fortsatt." : "Bruker slettet.", "ok");
-  } catch (er) { if (S) show($("bmsg2"), er.message, "err"); }
-};
-
-/* --- Organisasjonsnivåer --- */
-const dupNavn = er => er && er.status === 409 ? "Det finnes allerede et nivå med dette navnet her." : null;
-function renderOrg(){
-  show($("omsg2"), "", "");
-  $("oliste").innerHTML = tre(NODER).map(n => {
-    const ind = (n.nivaa - 1) * 12;
-    if (!iOmr(n.id)) return `<div class="item" style="margin-left:${ind}px"><small>${esc(n.navn)} <span class="pill">${esc(nivaaNavn(n))}</span> · over ditt område</small></div>`;
-    const kanRedigere = TILG.super || !TOPS.includes(n.id);
-    return `<div class="arow" data-id="${n.id}" style="margin-left:${ind}px"><input type="text" maxlength="80" value="${esc(n.navn)}" aria-label="Navn på nivå"${kanRedigere ? "" : " disabled"}>
-      <label class="chk"><input type="checkbox" class="oakt" ${n.aktiv ? "checked" : ""}${kanRedigere ? "" : " disabled"}> Aktiv</label>${kanRedigere ? '<button type="button" class="sec sm">Lagre</button>' : "<span></span>"}
-      <span class="hint" style="grid-column:1/-1">${esc(nivaaNavn(n))} · nivå ${n.nivaa} av 5${kanRedigere ? "" : " · ditt toppnivå (endres av nivået over)"}</span>
-      ${!n.parent_id && TILG.super ? `<input type="text" class="onn" style="grid-column:1/-1" placeholder="Navn på nivåene, f.eks. Forbund, Region, Krets, Lag, Gruppe" value="${esc((n.nivaanavn || []).join(", "))}" aria-label="Navn på nivåene">` : ""}</div>`;
-  }).join("") || '<div class="item"><small>Ingen nivåer ennå.</small></div>';
-}
-$("oliste").onclick = async e => {
-  const b = e.target.closest("button"); if (!b) return;
-  const row = b.closest(".arow"), navn = row.querySelector("input[type=text]").value.trim(), aktiv = row.querySelector(".oakt").checked;
-  show($("omsg2"), "", "");
-  if (!navn) { show($("omsg2"), "Navn kan ikke være tomt.", "err"); return; }
-  const body = {navn, aktiv}, nn = row.querySelector(".onn");
-  if (nn) body.nivaanavn = nn.value.split(",").map(x => x.trim()).filter(Boolean).slice(0, 5);
-  try {
-    const r = await (await api("org_node?id=eq." + row.dataset.id, {method: "PATCH", headers: {Prefer: "return=representation"}, body: JSON.stringify(body)})).json();
-    if (!r.length) throw new Error("ingen");
-    await loadOrg(); await loadAvd(); fillSelects(); renderOrg(); show($("omsg2"), "Lagret.", "ok");
-  } catch (er) { if (S) show($("omsg2"), dupNavn(er) || "Kunne ikke lagre.", "err"); }
-};
-$("nlegg").onclick = async () => {
-  const navn = $("nnavn").value.trim(), forelder = $("nnode").value ? +$("nnode").value : null; show($("omsg2"), "", "");
-  if (!navn) { show($("omsg2"), "Skriv inn et navn.", "err"); return; }
-  try {
-    await api("org_node", {method: "POST", headers: {Prefer: "return=minimal"}, body: JSON.stringify({parent_id: forelder, navn})});
-    $("nnavn").value = ""; await loadOrg(); fillSelects(); renderOrg(); show($("omsg2"), "Nivå opprettet.", "ok");
-  } catch (er) { if (S) show($("omsg2"), dupNavn(er) || (er.melding && er.kode === "P0001" ? er.melding + "." : "Kunne ikke opprette nivået."), "err"); }
-};
-
-/* --- Avdelinger --- */
-const GPSTXT = {av: "Posisjon: av", valgfri: "Posisjon: valgfri", pakrevd: "Posisjon: påkrevd"};
-function renderAvd(){
-  const noder = omrNoder();
-  $("aliste").innerHTML = AVD.map(a => `<div class="arow" data-id="${a.id}"><input type="text" maxlength="80" value="${esc(a.navn)}" aria-label="Navn" style="grid-column:1/-1">
-    <select class="snode" aria-label="Hører til nivå" style="grid-column:1/-1">${noder.map(n => opt(n.id, nodeEtikett(n), n.id === a.org_id)).join("")}</select>
-    <select class="sgps" aria-label="Posisjon (GPS)">${Object.keys(GPSTXT).map(k => opt(k, GPSTXT[k], (a.gps_modus || "av") === k)).join("")}</select>
-    <label class="chk"><input type="checkbox" ${a.aktiv ? "checked" : ""}> Aktiv</label><button type="button" class="sec sm">Lagre</button></div>`).join("") || '<div class="item"><small>Ingen avdelinger ennå.</small></div>';
-}
-$("aliste").onclick = async e => {
-  const b = e.target.closest("button"); if (!b) return;
-  const row = b.closest(".arow"), navn = row.querySelector("input[type=text]").value.trim(), aktiv = row.querySelector("input[type=checkbox]").checked;
-  const gps_modus = row.querySelector(".sgps").value, org_id = +row.querySelector(".snode").value;
-  show($("amsg"), "", "");
-  if (!navn) { show($("amsg"), "Navn kan ikke være tomt.", "err"); return; }
-  try {
-    const r = await (await api("avdeling?id=eq." + row.dataset.id, {method: "PATCH", headers: {Prefer: "return=representation"}, body: JSON.stringify({navn, aktiv, gps_modus, org_id})})).json();
-    if (!r.length) throw new Error("ingen");
-    await loadAvd(); fillSelects(); renderAvd(); show($("amsg"), "Lagret.", "ok");
-  } catch (er) { if (S) show($("amsg"), er.status === 409 ? "Det finnes allerede en avdeling med dette navnet på nivået." : "Kunne ikke lagre.", "err"); }
-};
-$("alegg").onclick = async () => {
-  const navn = $("anavn").value.trim(); show($("amsg"), "", "");
-  if (!navn) { show($("amsg"), "Skriv inn et navn.", "err"); return; }
-  try {
-    await api("avdeling", {method: "POST", headers: {Prefer: "return=minimal"}, body: JSON.stringify({navn, org_id: +$("anode").value})});
-    $("anavn").value = ""; await loadAvd(); fillSelects(); renderAvd(); show($("amsg"), "Avdeling opprettet.", "ok");
-  } catch (er) { if (S) show($("amsg"), er.status === 409 ? "Det finnes allerede en avdeling med dette navnet på nivået." : "Kunne ikke opprette avdelingen.", "err"); }
-};
-
-/* --- Arrangement og aktiviteter (admin) --- */
-let XARR = [];
-async function loadArr(){
-  show($("xmsg"), "", "");
-  if (!$("xav").value && AVD.length) $("xav").value = AVD[0].id;
-  if (!$("xav").value) { $("xliste").innerHTML = '<div class="item"><small>Opprett en avdeling først.</small></div>'; return; }
-  try {
-    XARR = await (await api("arrangement?avdeling_id=eq." + $("xav").value + "&select=id,navn,aktiv,aktivitet(id,navn,aktiv)&aktivitet.order=navn&order=navn")).json();
-    renderArr();
-  } catch { if (S) show($("xmsg"), "Kunne ikke hente arrangementene.", "err"); }
-}
-function renderArr(){
-  $("xliste").innerHTML = XARR.length ? XARR.map(a => `<div class="xarr" data-arr="${a.id}">
-    <div class="arow" data-t="arrangement" data-id="${a.id}"><input type="text" maxlength="120" value="${esc(a.navn)}" aria-label="Arrangement" style="font-weight:700">
-      <label class="chk"><input type="checkbox" ${a.aktiv ? "checked" : ""}> Aktiv</label><button type="button" class="sec sm" data-x="lagre">Lagre</button></div>
-    <div class="xakts">${(a.aktivitet || []).map(k => `<div class="arow" data-t="aktivitet" data-id="${k.id}"><input type="text" maxlength="120" value="${esc(k.navn)}" aria-label="Aktivitet">
-      <label class="chk"><input type="checkbox" ${k.aktiv ? "checked" : ""}> Aktiv</label><button type="button" class="sec sm" data-x="lagre">Lagre</button></div>`).join("")}
-      <div class="arow"><input type="text" maxlength="120" class="nyakt" placeholder="Ny aktivitet" aria-label="Ny aktivitet"><span></span><button type="button" class="sm" data-x="ny" data-arr="${a.id}">Legg til</button></div>
-    </div></div>`).join("") : '<div class="item"><small>Ingen arrangement ennå. Brukerne kan også opprette dem når de registrerer timer.</small></div>';
-}
-$("xav").onchange = loadArr;
-const dupTxt = er => er && er.status === 409 ? "Dette navnet finnes allerede." : "Kunne ikke lagre.";
-$("xliste").onclick = async e => {
-  const b = e.target.closest("button[data-x]"); if (!b) return; show($("xmsg"), "", "");
-  try {
-    if (b.dataset.x === "lagre") {
-      const row = b.closest(".arow"), navn = row.querySelector("input[type=text]").value.trim(), aktiv = row.querySelector("input[type=checkbox]").checked;
-      if (!navn) { show($("xmsg"), "Navn kan ikke være tomt.", "err"); return; }
-      const r = await (await api(row.dataset.t + "?id=eq." + row.dataset.id, {method: "PATCH", headers: {Prefer: "return=representation"}, body: JSON.stringify({navn, aktiv})})).json();
-      if (!r.length) throw new Error("ingen");
-      await loadArr(); show($("xmsg"), "Lagret.", "ok");
-    } else {
-      const navn = b.closest(".arow").querySelector(".nyakt").value.trim();
-      if (!navn) { show($("xmsg"), "Skriv inn navn på aktiviteten.", "err"); return; }
-      await api("aktivitet", {method: "POST", headers: {Prefer: "return=minimal"}, body: JSON.stringify({arrangement_id: +b.dataset.arr, navn})});
-      await loadArr(); show($("xmsg"), "Aktivitet opprettet.", "ok");
-    }
-  } catch (er) { if (S) show($("xmsg"), dupTxt(er), "err"); }
-};
-$("xlegg").onclick = async () => {
-  const navn = $("xnavn").value.trim(); show($("xmsg"), "", "");
-  if (!navn) { show($("xmsg"), "Skriv inn navn på arrangementet.", "err"); return; }
-  try {
-    await api("arrangement", {method: "POST", headers: {Prefer: "return=minimal"}, body: JSON.stringify({avdeling_id: +$("xav").value, navn})});
-    $("xnavn").value = ""; await loadArr(); show($("xmsg"), "Arrangement opprettet. Legg til aktiviteter under det.", "ok");
-  } catch (er) { if (S) show($("xmsg"), dupTxt(er), "err"); }
-};
-
-/* ---------- Bilder ---------- */
-const MAXPX = 1280;
-let fotos = [];
-async function shrink(file){
-  let bmp;
-  try { bmp = await createImageBitmap(file, {imageOrientation: "from-image"}); }
-  catch {
-    bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = URL.createObjectURL(file); });
-  }
-  const k = Math.min(1, MAXPX / Math.max(bmp.width, bmp.height));
-  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
-  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
-  if (bmp.close) bmp.close();
-  const url = c.toDataURL("image/jpeg", 0.8);
-  // Liten miniatyr (maks 30 000 tegn base64) som Power BI kan vise direkte
-  let thumb = "";
-  for (const [px, q] of [[420, .6], [360, .5], [300, .5], [240, .45], [200, .4], [160, .3]]) {
-    const k2 = Math.min(1, px / Math.max(c.width, c.height)), t = document.createElement("canvas");
-    t.width = Math.max(1, Math.round(c.width * k2)); t.height = Math.max(1, Math.round(c.height * k2));
-    t.getContext("2d").drawImage(c, 0, 0, t.width, t.height);
-    thumb = t.toDataURL("image/jpeg", q).split(",")[1];
-    if (thumb.length <= 30000) break;
-  }
-  return {url, data: url.split(",")[1], thumb, name: (file.name || "bilde").replace(/\.[^.]+$/, "") + ".jpg", mime: "image/jpeg"};
-}
-function renderThumbs(){
-  $("thumbs").innerHTML = fotos.map((f, i) => `<div class="th"><img src="${f.url}" alt="Bilde ${i + 1}"><button type="button" data-i="${i}" aria-label="Fjern bilde ${i + 1}">×</button></div>`).join("");
-  $("fcount").textContent = fotos.length ? fotos.length + " av 5 bilder valgt" : "Ingen bilder valgt";
-  $("cam").disabled = $("gal").disabled = fotos.length >= 5;
-}
-let q = Promise.resolve();
-const addFiles = list => (q = q.then(() => addNow(list)));
-async function addNow(list){
-  show($("msg"), "", "");
-  for (const f of list) {
-    if (fotos.length >= 5) { show($("msg"), "Maks 5 bilder per registrering.", "err"); break; }
-    try { fotos.push(await shrink(f)); } catch { show($("msg"), "Kunne ikke lese et av bildene.", "err"); }
-  }
-  renderThumbs();
-}
-$("cam").onclick = () => $("fcam").click();
-$("gal").onclick = () => $("fgal").click();
-$("fcam").onchange = $("fgal").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
-$("thumbs").onclick = e => { const b = e.target.closest("button[data-i]"); if (b) { fotos.splice(+b.dataset.i, 1); renderThumbs(); } };
-
-$("lf").onsubmit = async e => {
-  e.preventDefault(); $("lbtn").disabled = true; show($("lmsg"), "", "");
-  try {
-    S = await auth("token?grant_type=password", {email: $("em").value.trim(), password: $("pw").value});
-    save(S); $("pw").value = ""; await start(true);
-  } catch { show($("lmsg"), "Feil e-post eller passord.", "err"); }
-  $("lbtn").disabled = false;
-};
-
-$("out").onclick = logout;
-
-const calc = () => $("tot").textContent = ((+$("x").value || 0) * (+$("y").value || 0)).toLocaleString("nb-NO");
-$("x").oninput = $("y").oninput = calc;
-
-$("f").onsubmit = async e => {
-  e.preventDefault(); show($("msg"), "", "");
-  const av = $("arr").value, ak = $("akt").value, nyArr = $("arrny").value.trim(), nyAkt = $("aktny").value.trim();
-  if (!av || (av === NY && !nyArr)) { show($("msg"), "Velg eller skriv inn arrangement.", "err"); return; }
-  if (!ak || (ak === NY && !nyAkt)) { show($("msg"), "Velg eller skriv inn aktivitet.", "err"); return; }
-  if (GPSM === "pakrevd" && !pos) { show($("msg"), "Posisjon må registreres (bruk posisjonen din eller skriv inn koordinater).", "err"); return; }
-  $("btn").disabled = true; $("btn").textContent = "Lagrer…";
-  const antall = +$("x").value, timer = +$("y").value, nb = fotos.length;
-  const arrNavn = av === NY ? nyArr : $("arr").selectedOptions[0].textContent, aktNavn = ak === NY ? nyAkt : $("akt").selectedOptions[0].textContent;
-  try {
-    await api("rpc/registrer_aktivitet", {method: "POST", body: JSON.stringify({
-      p_arrangement_id: av === NY ? null : +av, p_arrangement_navn: av === NY ? nyArr : null,
-      p_aktivitet_id: ak === NY ? null : +ak, p_aktivitet_navn: ak === NY ? nyAkt : null,
-      p_dato: $("dato").value, p_antall: antall, p_timer: timer,
-      p_registrert_av: $("av").value.trim() || null, p_kommentar: $("kom").value.trim() || null,
-      p_bilder: fotos.map(f => ({filnavn: f.name, mime: f.mime, data: f.data, miniatyr: f.thumb})),
-      p_breddegrad: GPSM !== "av" && pos ? pos.lat : null, p_lengdegrad: GPSM !== "av" && pos ? pos.lng : null,
-      p_noyaktighet: GPSM !== "av" && pos ? pos.acc : null, p_posisjon_kilde: GPSM !== "av" && pos ? pos.kilde : null,
-      p_avdeling_id: avdId
-    })});
-    show($("msg"), `Lagret: ${antall} × ${timer} t = ${fmt(antall * timer)} timer` + (nb ? ` og ${nb} ${nb > 1 ? "bilder" : "bilde"}.` : "."), "ok");
-    $("x").value = $("y").value = $("kom").value = ""; $("arrny").value = $("aktny").value = "";
-    fotos = []; renderThumbs(); calc(); ST = null; hist(); setPos(null); $("gpsinp").value = "";
-    await loadKatalog(arrNavn, aktNavn);   // nye navn dukker opp i listene; valget beholdes
-  } catch (er) { if (S) show($("msg"), er && er.kode === "P0001" && er.melding ? er.melding + "." : "Kunne ikke lagre. Sjekk tilkoblingen og prøv igjen.", "err"); }
-  $("btn").disabled = false; $("btn").textContent = "Lagre";
-};
-
-/* ---------- Arrangement og aktivitet ---------- */
-const NY = "__ny";
-let KAT = [], GPSM = "av", pos = null;
-const opt = (v, t, sel) => `<option value="${esc(v)}"${sel ? " selected" : ""}>${esc(t)}</option>`;
-
-async function loadKatalog(velgArr, velgAkt){
-  if (!avdId) return;
-  const behold = velgArr === undefined ? $("arr").value : "";
-  try {
-    KAT = await (await api("arrangement?avdeling_id=eq." + avdId + "&aktiv=eq.true&select=id,navn,aktivitet(id,navn,aktiv)&aktivitet.order=navn&order=navn")).json();
-    KAT.forEach(a => { a.aktivitet = (a.aktivitet || []).filter(k => k.aktiv); });
-  } catch { if (!KAT.length) KAT = []; }
-  $("arr").innerHTML = opt("", "Velg arrangement…") + KAT.map(a => opt(a.id, a.navn)).join("") + opt(NY, "＋ Nytt arrangement…");
-  let v = "";
-  if (velgArr) { const a = KAT.find(x => x.navn.trim().toLowerCase() === velgArr.trim().toLowerCase()); if (a) v = String(a.id); }
-  else if (behold === NY || KAT.some(x => String(x.id) === behold)) v = behold;
-  $("arr").value = v; arrEndret(velgAkt);
-}
-function arrEndret(velgAkt){
-  const v = $("arr").value, ny = v === NY, a = KAT.find(x => String(x.id) === v), forrige = $("akt").value;
-  $("arrnylbl").hidden = !ny; $("arrny").required = ny; if (!ny) $("arrny").value = "";
-  if (!v) { $("akt").innerHTML = opt("", "Velg arrangement først"); $("akt").disabled = true; }
-  else if (ny) { $("akt").innerHTML = opt(NY, "＋ Ny aktivitet…"); $("akt").disabled = true; }
-  else {
-    $("akt").disabled = false;
-    $("akt").innerHTML = opt("", "Velg aktivitet…") + (a ? a.aktivitet : []).map(k => opt(k.id, k.navn)).join("") + opt(NY, "＋ Ny aktivitet…");
-    let k = "";
-    if (velgAkt) { const x = (a ? a.aktivitet : []).find(y => y.navn.trim().toLowerCase() === velgAkt.trim().toLowerCase()); if (x) k = String(x.id); }
-    else if ([...$("akt").options].some(o => o.value === forrige)) k = forrige;
-    $("akt").value = k;
-  }
-  aktEndret();
-}
-function aktEndret(){
-  const ny = $("akt").value === NY;
-  $("aktnylbl").hidden = !ny; $("aktny").required = ny; if (!ny) $("aktny").value = "";
-}
-$("arr").onchange = () => arrEndret(); $("akt").onchange = aktEndret;
-
-/* ---------- Posisjon (GPS / koordinater) – slås av/på av administrator per avdeling ---------- */
-function setupGps(){
-  $("gpsbox").hidden = GPSM === "av";
-  $("gpslbl").textContent = "Sted for aktiviteten " + (GPSM === "pakrevd" ? "(påkrevd)" : "(valgfritt)");
-  $("gpsinp").required = false; visPos();
-}
-function parseKoord(t){
-  t = String(t || "").trim(); if (!t) return null;
-  const m = t.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/) || t.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/)
-    || t.match(/[?&]mlat=(-?[\d.]+)&mlon=(-?[\d.]+)/) || t.match(/#map=\d+\/(-?[\d.]+)\/(-?[\d.]+)/)
-    || t.match(/[?&](?:q|ll|query|destination)=(-?\d+(?:\.\d+)?)(?:,|%2C)\s*(-?\d+(?:\.\d+)?)/i);
-  let a, b;
-  if (m) { a = +m[1]; b = +m[2]; }
-  else {
-    const n = t.match(/-?\d+(?:[.,]\d+)?/g);
-    if (!n || n.length !== 2) return null;
-    [a, b] = n.map(x => +x.replace(",", "."));
-  }
-  if (!isFinite(a) || !isFinite(b) || Math.abs(a) > 90 || Math.abs(b) > 180) return null;
-  return {lat: +a.toFixed(6), lng: +b.toFixed(6)};
-}
-function setPos(p){ pos = p; visPos(); }
-function visPos(){
-  const el = $("gpsinfo");
-  if (!pos) {
-    el.textContent = $("gpsinp").value.trim() ? "Kunne ikke tolke koordinatene. Bruk f.eks. 62.4722, 6.1495 eller en lenke fra Google Maps eller OpenStreetMap."
-      : (GPSM === "pakrevd" ? "Posisjon må registreres." : "Ikke registrert.");
-    return;
-  }
-  el.innerHTML = `Posisjon: ${pos.lat}, ${pos.lng}` + (pos.acc ? ` (±${pos.acc} m)` : "") +
-    ` · <a href="https://www.openstreetmap.org/?mlat=${pos.lat}&mlon=${pos.lng}#map=17/${pos.lat}/${pos.lng}" target="_blank" rel="noopener">Vis i kart</a>`;
-}
-$("gpsinp").oninput = () => { const p = parseKoord($("gpsinp").value); setPos(p ? {...p, acc: null, kilde: "manuell"} : null); };
-$("gpsclr").onclick = () => { $("gpsinp").value = ""; setPos(null); };
-$("gpsbtn").onclick = () => {
-  if (!navigator.geolocation) { $("gpsinfo").textContent = "Enheten støtter ikke posisjon. Skriv inn koordinater i stedet."; return; }
-  $("gpsbtn").disabled = true; $("gpsinfo").textContent = "Henter posisjon…";
-  navigator.geolocation.getCurrentPosition(r => {
-    const lat = +r.coords.latitude.toFixed(6), lng = +r.coords.longitude.toFixed(6);
-    $("gpsinp").value = lat + ", " + lng;
-    setPos({lat, lng, acc: Number.isFinite(r.coords.accuracy) ? Math.round(r.coords.accuracy) : null, kilde: "gps"});
-    $("gpsbtn").disabled = false;
-  }, err => {
-    $("gpsbtn").disabled = false;
-    $("gpsinfo").textContent = err.code === 1 ? "Tilgang til posisjon ble avslått. Gi tillatelse i nettleseren, eller skriv inn koordinater."
-      : "Fant ikke posisjonen. Prøv igjen utendørs, eller skriv inn koordinater.";
-  }, {enableHighAccuracy: true, timeout: 20000, maximumAge: 0});
-};
-
-$("forgot").onclick = () => { $("rem").value = $("em").value; show($("rmsg"), "", ""); view("reset"); };
-$("rback").onclick = () => view("login");
-
-$("rf").onsubmit = async e => {
-  e.preventDefault(); $("rbtn").disabled = true; show($("rmsg"), "", "");
-  try {
-    const redirect = encodeURIComponent(location.origin + location.pathname);
-    const r = await fetch(SUPABASE_URL + "/auth/v1/recover?redirect_to=" + redirect, {
-      method: "POST", headers: {apikey: SUPABASE_ANON_KEY, "Content-Type": "application/json"},
-      body: JSON.stringify({email: $("rem").value.trim()})
-    });
-    if (r.status === 429) { show($("rmsg"), "For mange forsøk. Vent litt og prøv igjen.", "err"); }
-    else if (!r.ok) throw new Error("recover");
-    else show($("rmsg"), "Hvis e-posten er registrert, er en lenke for nytt passord sendt. Sjekk også søppelpost.", "ok");
-  } catch { show($("rmsg"), "Kunne ikke sende e-post. Prøv igjen senere.", "err"); }
-  $("rbtn").disabled = false;
-};
-
-$("chpw").onclick = () => { $("np").value = $("np2").value = ""; show($("pmsg"), "", ""); view("setpw"); };
-$("pcancel").onclick = () => { if (load()) view("app"); else logout(); };
-
-async function putPassword(p, retry = true){
-  const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
-    method: "PUT",
-    headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + S.access, "Content-Type": "application/json"},
-    body: JSON.stringify({password: p})
-  });
-  if (r.status === 401 && retry && S.refresh) {
-    S = await auth("token?grant_type=refresh_token", {refresh_token: S.refresh});
-    return putPassword(p, false);
-  }
-  return r;
-}
-
-$("pf").onsubmit = async e => {
-  e.preventDefault(); show($("pmsg"), "", "");
-  const p = $("np").value;
-  if (p !== $("np2").value) { show($("pmsg"), "Passordene er ikke like.", "err"); return; }
-  $("pbtn").disabled = true;
-  try {
-    const r = await putPassword(p);
-    if (r.status === 422) { show($("pmsg"), "Passordet er for svakt, eller likt det gamle. Velg et annet.", "err"); }
-    else if (!r.ok) throw new Error("pw");
-    else { save(S); $("np").value = $("np2").value = ""; await start(); alert("Passordet er endret."); }
-  } catch { show($("pmsg"), "Kunne ikke endre passord. Be om en ny lenke via «Glemt passord?».", "err"); }
-  $("pbtn").disabled = false;
-};
-
-// Oppstart: sjekk om vi kommer fra en lenke for nytt passord
-const hp = new URLSearchParams(location.hash.slice(1));
-if (hp.get("type") === "recovery" && hp.get("access_token")) {
-  save(null);
-  S = {access: hp.get("access_token"), refresh: hp.get("refresh_token")};
-  history.replaceState(null, "", location.pathname + location.search);
-  view("setpw");
-} else if (hp.get("error_description")) {
-  history.replaceState(null, "", location.pathname + location.search);
-  view("login");
-  show($("lmsg"), "Lenken er utløpt eller ugyldig. Trykk «Glemt passord?» for å få en ny.", "err");
-} else {
-  S = load();
-  if (S) start(); else view("login");
+// Videoene spiller av seg selv uten lyd når de er synlige – men ikke hvis brukeren har bedt om redusert bevegelse
+const rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+for (const v of [$("v-mobil"), $("v-pc")]) {
+  if (rolig) { v.controls = true; continue; }
+  if (!("IntersectionObserver" in window)) { v.play().catch(() => { v.controls = true; }); continue; }
+  new IntersectionObserver(([x]) => { x.isIntersecting ? v.play().catch(() => { v.controls = true; }) : v.pause(); }, {threshold: .35}).observe(v);
 }
 </script>
 </body>
