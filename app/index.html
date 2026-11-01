@@ -377,12 +377,23 @@ async function auth(path, body){
 }
 
 // Alle kall til databasen sier hvilken organisasjon (rot) brukeren er innlogget i. Databasen kontrollerer at brukeren hører til der.
-const orgHode = () => ORG ? {"x-org": String(ORG)} : {};
+// Blokkerer nettleseren/serveren hodet (CORS), sendes det ikke lenger. Brukere med én organisasjon virker da likevel.
+let XORG_AV = false;
+const orgHode = () => ORG && !XORG_AV ? {"x-org": String(ORG)} : {};
 async function api(path, opts = {}, retry = true){
-  const r = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
-    ...opts,
-    headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + S.access, "Content-Type": "application/json", ...orgHode(), ...(opts.headers || {})}
-  });
+  let r;
+  try {
+    r = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+      ...opts,
+      headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + S.access, "Content-Type": "application/json", ...orgHode(), ...(opts.headers || {})}
+    });
+  } catch (x) {
+    if (Object.keys(orgHode()).length) {          // trolig CORS-blokkert x-org-hode: prøv uten
+      XORG_AV = true; console.warn("[Frivillige timer] Hodet x-org ble blokkert (CORS). Fortsetter uten.", x);
+      return api(path, opts, retry);
+    }
+    const e = new Error("nett"); e.nett = true; throw e;
+  }
   if (r.status === 401 && retry) {
     try { S = await auth("token?grant_type=refresh_token", {refresh_token: S.refresh}); save(S); return api(path, opts, false); }
     catch { logout(); throw new Error("utlopt"); }
@@ -407,7 +418,19 @@ async function start(fersk){
     else if (rot.length > 1 && !fersk && rot.some(r => r.id === +hent(ORGKEY))) valg = +hent(ORGKEY);
     if (rot.length > 1 && valg == null) { visOrgvalg(rot); return; }
     await gaaInn(valg);
-  } catch { if (S) { logout(); show($("lmsg"), "Kunne ikke hente tilgang.", "err"); } }
+  } catch (e) { console.error("[Frivillige timer] Innlogging:", e); if (S) { logout(); show($("lmsg"), "Kunne ikke hente tilgang. " + forklarFeil(e), "err"); } }
+}
+// Gjør tekniske feil om til en forklaring (vises på innloggingssiden)
+function forklarFeil(e){
+  const k = e && e.kode, st = e && e.status, m = (e && e.melding) || "";
+  if (e && e.nett) return "Fikk ikke kontakt med databasen. Sjekk SUPABASE_URL i index.html og nettverket.";
+  if (k === "PGRST202" || k === "42883" || /could not find the function|function .* does not exist/i.test(m))
+    return "Databasen mangler funksjoner (f.eks. min_tilgang). Kjør schema_organisasjon.sql i Supabase SQL Editor (etter de andre skriptene).";
+  if (k === "PGRST205" || k === "42P01" || k === "42703" || st === 404 || /could not find the table|does not exist/i.test(m))
+    return "Databasen mangler tabeller eller kolonner (" + (m || "ukjent") + "). Kjør SQL-skriptene i riktig rekkefølge.";
+  if (k === "42501" || st === 403) return "Databasen nektet tilgang (" + (m || "rettigheter") + "). Kjør schema_organisasjon.sql på nytt.";
+  if (st === 401) return "Innloggingen ble ikke godtatt av databasen. Sjekk SUPABASE_ANON_KEY i index.html.";
+  return "Teknisk feil" + (st ? " " + st : "") + (k ? " (" + k + ")" : "") + (m ? ": " + m : "") + ".";
 }
 function visOrgvalg(rot){
   $("orgliste").innerHTML = rot.map(r => `<button type="button" class="sec orgbtn" data-id="${r.id}">${esc(r.navn)}<small>${r.admin ? "Administrator" : "Bruker"}</small></button>`).join("");
