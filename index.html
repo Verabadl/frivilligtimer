@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://frivilligtimer.no/assets/bilder/delingsbilde.jpg">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0b6e4f">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="preload" href="assets/fonter/bricolage-grotesque-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face{font-family:"Bricolage Grotesque";font-weight:600;font-display:swap;src:url(assets/fonter/bricolage-grotesque-latin-600-normal.woff2) format("woff2")}
@@ -139,6 +140,17 @@ legend{margin-bottom:4px}
 .status.feil{background:#fde2e2;color:var(--feil)}
 .skjul-sendt{display:grid;gap:18px}
 form.sendt .skjul-sendt{display:none}
+.status .teknisk{display:block;margin-top:8px;font-weight:400;font-size:.88rem;opacity:.85}
+.diagnose{margin-top:12px;margin-bottom:24px;padding:20px;border:2px dashed var(--gronn);border-radius:14px;background:var(--papir);display:grid;gap:12px}
+.diagnose h2{font-size:1.4rem}
+.diagnose ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.diagnose li{padding-left:26px;position:relative}
+.diagnose li::before{position:absolute;left:0;font-weight:700}
+.diagnose li.ok::before{content:"✓";color:var(--gronn)}
+.diagnose li.feil::before{content:"✗";color:var(--feil)}
+.diagnose li.info::before{content:"•";color:var(--mose)}
+.diagnose .knapp{justify-self:start}
+.diagnose code{background:var(--lys);padding:1px 5px;border-radius:4px}
 
 /* Bunn */
 .bunn{padding:48px 0 60px;border-top:1px solid var(--strek);font-size:1rem;color:var(--mose)}
@@ -338,11 +350,18 @@ form.sendt .skjul-sendt{display:none}
 
 <script>
 // === Innsending =====================================================================
+// FORUTSETNINGER (se LESMEG.md). Åpne siden med ?diagnose i adressen for å sjekke dem:
+//  • Siden må åpnes fra en nettadresse (https://…), ikke som fil, og ikke fra en forhåndsvisning
+//    som blokkerer nettverkskall.
+//  • Supabase: schema_pilotinteresse.sql er kjørt, og URL og nøkkel under er fylt inn.
+//  • FormSubmit: aktiveringslenken som sendes til MOTTAKER ved første innsending, er klikket.
+//  • Serveren må ikke sette «Referrer-Policy: no-referrer» eller en innholdsregel (CSP) som stopper kall
+//    til *.supabase.co og formsubmit.co. GitHub Pages er i orden.
 // 1) Meldingen lagres i Supabase-tabellen pilot_interesse (schema_pilotinteresse.sql).
 //    Bruk samme verdier som i appen: Supabase → Project Settings → API (Project URL og anon/publishable key).
 //    Nøkkelen kan ligge åpent: siden kan bare sende inn via funksjonen, ikke lese tabellen.
-const SUPABASE_URL = "https://DITT-PROSJEKT.supabase.co";
-const SUPABASE_ANON_KEY = "DIN-ANON-KEY";
+const SUPABASE_URL = "https://incyjccsgazurdzwdjlc.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluY3lqY2NzZ2F6dXJkendkamxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODUzMjcsImV4cCI6MjEwNzY2MTMyN30.8IXlcM8R3cG0a3zZ03GdYtEvYUXh8yn4_PczGkHtUZc";
 // 2) I tillegg sendes et e-postvarsel via FormSubmit (sett SEND_EPOST = false for å slå av).
 //    Første innsending sender en aktiveringslenke til info@frivilligtimer.no som må bekreftes én gang.
 const SEND_EPOST = true;
@@ -386,6 +405,58 @@ function valider(){
 }
 const jaNei = id => $(id).checked ? "Ja" : "Nei";
 
+// --- Innsending -------------------------------------------------------------------
+const erFil = location.protocol === "file:";
+const supabaseSatt = !SUPABASE_URL.includes("DITT-PROSJEKT") && !SUPABASE_ANON_KEY.includes("DIN-ANON");
+
+// Lagre i Supabase. Svar: {ok} | {avvist: melding fra databasen} | {feil: teknisk årsak}
+async function lagreDb(body){
+  if (!supabaseSatt) return {feil: "Supabase er ikke satt opp (SUPABASE_URL/SUPABASE_ANON_KEY)"};
+  try {
+    const r = await fetch(SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/rpc/registrer_pilotinteresse", {
+      method: "POST",
+      headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+    if (r.ok) return {ok: true};
+    const j = await r.json().catch(() => ({}));
+    if (j.code === "P0001" && j.message) return {avvist: j.message};
+    if (r.status === 401 || r.status === 403) return {feil: "Supabase avviste nøkkelen (sjekk SUPABASE_ANON_KEY)"};
+    if (r.status === 404 || j.code === "PGRST202") return {feil: "Funksjonen registrer_pilotinteresse finnes ikke (kjør schema_pilotinteresse.sql)"};
+    return {feil: "Supabase svarte " + r.status + (j.message ? ": " + j.message : "")};
+  } catch (_) { return {feil: "Fikk ikke kontakt med Supabase (sjekk SUPABASE_URL og nettverk)"}; }
+}
+
+// Send e-postvarsel via FormSubmit. Svar: {ok} | {aktivering} | {feil}
+// «aktivering»: skjemaet er ikke aktivert ennå. FormSubmit holder på innsendingen og leverer den når
+// aktiveringslenken (sendt til MOTTAKER) er klikket – meldingen går altså ikke tapt.
+async function sendEpost(data){
+  if (!SEND_EPOST) return {feil: "E-post er slått av (SEND_EPOST = false)"};
+  if (erFil) return {feil: "Siden er åpnet som en fil. FormSubmit virker bare fra en nettadresse (https://…)"};
+  try {
+    const r = await fetch(ENDEPUNKT, {method: "POST", referrerPolicy: "strict-origin-when-cross-origin",
+      headers: {"Content-Type": "application/json", Accept: "application/json"},
+      body: JSON.stringify({...data, _url: location.href.split("#")[0]})});
+    const tekst = await r.text(); let j = {}; try { j = JSON.parse(tekst); } catch (_) {}
+    const m = String(j.message || "");
+    if (r.ok && String(j.success) === "true") return {ok: true};
+    if (/activat/i.test(m)) return {aktivering: true, melding: m};
+    if (/web server|html files/i.test(m)) return {feil: "FormSubmit godtar ikke siden: den må ligge på en nettadresse og sende adressen sin (Referer)"};
+    return {feil: "FormSubmit svarte " + r.status + (m ? ": " + m : "")};
+  } catch (_) { return {feil: "Fikk ikke kontakt med FormSubmit (nettverk, annonseblokker eller innholdsregler på serveren)"}; }
+}
+
+function dbBody(){
+  return {
+    p_navn: $("navn").value.trim(), p_organisasjon: $("org").value.trim(), p_epost: $("epost").value.trim(), p_telefon: $("tlf").value.trim(),
+    p_melding: $("melding").value.trim() || null,
+    p_samtykke_epost: $("s-epost").checked, p_samtykke_mobil: $("s-mobil").checked,
+    p_samtykke_produktinfo: $("s-info").checked, p_samtykke_undersokelser: $("s-test").checked,
+    p_personvern: $("s-personvern").checked, p_samtykke_versjon: SAMTYKKE_VERSJON,
+    p_kilde: location.href.split("#")[0], p_honning: $("hp").value || null
+  };
+}
+
 skjema.addEventListener("submit", async e => {
   e.preventDefault();
   status.className = "status"; status.textContent = "";
@@ -413,55 +484,61 @@ skjema.addEventListener("submit", async e => {
   };
   send.disabled = true; send.textContent = "Sender …";
   try {
-    // 1) Lagre i databasen. Valideringsfeil fra databasen vises for brukeren; andre feil går videre til e-post.
-    let lagret = false;
-    if (!SUPABASE_URL.includes("DITT-PROSJEKT")) {
-      try {
-        const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/registrer_pilotinteresse", {
-          method: "POST",
-          headers: {apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY, "Content-Type": "application/json"},
-          body: JSON.stringify({
-            p_navn: data["Navn"], p_organisasjon: data["Organisasjon"], p_epost: data["E-post"], p_telefon: data["Telefon"],
-            p_melding: $("melding").value.trim() || null,
-            p_samtykke_epost: $("s-epost").checked, p_samtykke_mobil: $("s-mobil").checked,
-            p_samtykke_produktinfo: $("s-info").checked, p_samtykke_undersokelser: $("s-test").checked,
-            p_personvern: $("s-personvern").checked, p_samtykke_versjon: SAMTYKKE_VERSJON,
-            p_kilde: data["Side"], p_honning: $("hp").value || null
-          })
-        });
-        if (r.ok) lagret = true;
-        else {
-          const j = await r.json().catch(() => ({}));
-          if (j.code === "P0001" && j.message) {          // melding fra databasen, f.eks. ugyldig e-post eller for mange innsendinger
-            status.className = "status feil"; status.textContent = j.message; return;
-          }
-        }
-      } catch (_) { /* nettverksfeil: prøv e-post */ }
+    const db = await lagreDb(dbBody());
+    if (db.avvist) { status.className = "status feil"; status.textContent = db.avvist; return; }
+    const ep = await sendEpost({...data, "Lagret i database": db.ok ? "Ja" : "Nei"});
+    if (!db.ok) console.warn("[Frivilligtimer] Database:", db.feil);
+    if (ep.aktivering) console.warn("[Frivilligtimer] FormSubmit er ikke aktivert ennå. Klikk aktiveringslenken som er sendt til " + MOTTAKER + ". Innsendingen leveres etter aktivering.");
+    else if (!ep.ok) console.warn("[Frivilligtimer] E-post:", ep.feil);
+
+    if (db.ok || ep.ok || ep.aktivering) {
+      skjema.classList.add("sendt");
+      status.className = "status ok";
+      status.textContent = `Takk, ${data["Navn"].split(" ")[0]}! Vi har mottatt interessen fra ${data["Organisasjon"]} og tar kontakt.`;
+      skjema.scrollIntoView({block: "nearest"});
+      return;
     }
-    // 2) E-postvarsel. Feiler det, men meldingen er lagret, er alt i orden for brukeren.
-    let epostOk = false;
-    if (SEND_EPOST) {
-      try {
-        const r = await fetch(ENDEPUNKT, {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"},
-                                          body: JSON.stringify({...data, "Lagret i database": lagret ? "Ja" : "Nei"})});
-        const j = await r.json().catch(() => ({}));
-        epostOk = r.ok && String(j.success) === "true";
-      } catch (_) {}
-    }
-    if (!lagret && !epostOk) throw new Error("ikke sendt");
-    skjema.classList.add("sendt");
-    status.className = "status ok";
-    status.textContent = `Takk, ${data["Navn"].split(" ")[0]}! Vi har mottatt interessen fra ${data["Organisasjon"]} og tar kontakt.`;
-    skjema.scrollIntoView({block: "nearest"});
-  } catch (err) {
+    // Ingen av kanalene virket: vis årsaken og tilby e-post som reserve
+    const aarsak = erFil ? "Siden er åpnet som en fil på maskinen. Skjemaet virker bare når siden er publisert på en nettadresse (https://…)."
+                         : [db.feil, ep.feil].filter(Boolean).join(". ") + ".";
     const body = Object.entries(data).filter(([k]) => !k.startsWith("_")).map(([k, v]) => k + ": " + v).join("\n");
     status.className = "status feil";
-    status.innerHTML = 'Skjemaet ble ikke sendt. Prøv igjen om litt, eller <a id="epostlenke">send det samme på e-post</a>.';
+    status.innerHTML = 'Skjemaet ble ikke sendt. Prøv igjen om litt, eller <a id="epostlenke">send det samme på e-post</a>.<small class="teknisk"></small>';
+    status.querySelector(".teknisk").textContent = "Årsak: " + aarsak;
     $("epostlenke").href = "mailto:" + MOTTAKER + "?subject=" + encodeURIComponent(data._subject) + "&body=" + encodeURIComponent(body);
   } finally {
     send.disabled = false; send.textContent = "Send interesse";
   }
 });
+
+// --- Diagnose: åpne siden med ?diagnose i adressen (f.eks. https://frivilligtimer.no/?diagnose) ---------
+// Sjekker forutsetningene uten å lagre noe. «Send testvarsel» sender én test-e-post via FormSubmit.
+if (new URLSearchParams(location.search).has("diagnose")) (async () => {
+  const boks = document.createElement("section");
+  boks.className = "diagnose wrap"; boks.setAttribute("aria-label", "Diagnose av skjemaet");
+  boks.innerHTML = '<h2>Diagnose av skjemaet</h2><p>Denne boksen vises bare når adressen inneholder <code>?diagnose</code>.</p><ul id="diag"></ul>' +
+    '<button type="button" class="knapp" id="diag-test">Send testvarsel via FormSubmit</button><p id="diag-test-svar"></p>';
+  document.querySelector("main").prepend(boks);
+  const ut = (ok, tekst) => { const li = document.createElement("li"); li.className = ok === true ? "ok" : ok === false ? "feil" : "info"; li.textContent = tekst; $("diag").append(li); };
+  ut(!erFil, erFil ? "Siden er åpnet som fil (file://). Publiser den, eller start en lokal webserver." : "Siden er åpnet fra " + location.origin + ".");
+  ut(location.protocol === "https:" || location.hostname === "localhost" ? true : null, location.protocol === "https:" ? "HTTPS er i bruk." : "Siden bruker ikke HTTPS. Bruk https på den publiserte siden.");
+  if (!supabaseSatt) ut(false, "Supabase er ikke satt opp: fyll inn SUPABASE_URL og SUPABASE_ANON_KEY i skriptet.");
+  else {
+    // Kall med robotfeltet utfylt: funksjonen svarer ok uten å lagre noe
+    const r = await lagreDb({p_navn: "Diagnose", p_organisasjon: "Diagnose", p_epost: "diagnose@example.com", p_telefon: "00000000", p_honning: "diagnose"});
+    ut(!!r.ok, r.ok ? "Supabase svarer, og funksjonen registrer_pilotinteresse finnes." : "Supabase: " + (r.feil || r.avvist));
+  }
+  ut(SEND_EPOST ? null : true, SEND_EPOST ? "E-postvarsel via FormSubmit er på (til " + MOTTAKER + "). Trykk knappen for å teste." : "E-postvarsel er slått av.");
+  $("diag-test").onclick = async () => {
+    $("diag-test").disabled = true; $("diag-test-svar").textContent = "Sender …";
+    const r = await sendEpost({_subject: "Test fra diagnose – Frivilligtimer", Melding: "Testvarsel sendt fra " + location.href, _template: "table", _captcha: "false"});
+    $("diag-test-svar").textContent = r.ok ? "OK: FormSubmit tok imot testen. Sjekk innboksen (og søppelpost) til " + MOTTAKER + "."
+      : r.aktivering ? "FormSubmit er ikke aktivert ennå. Se etter en e-post fra FormSubmit i " + MOTTAKER + " (sjekk også søppelpost), og klikk lenken «Activate Form». Innsendinger som allerede er sendt, leveres etter aktivering."
+      : "Feil: " + r.feil;
+    $("diag-test").disabled = false;
+  };
+})();
+
 
 // Videoene spiller av seg selv uten lyd når de er synlige – men ikke hvis brukeren har bedt om redusert bevegelse
 const rolig = matchMedia("(prefers-reduced-motion: reduce)").matches;
